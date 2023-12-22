@@ -164,7 +164,17 @@ static int test_operators()
 		B /= A;
 		Error += B == glm::ivec2(4, 8) ? 0 : 1;
 
-		B /= 2.0f;
+		B /= 2;
+		Error += B == glm::ivec2(2, 4) ? 0 : 1;
+	}
+	{
+		glm::ivec2 A(1.0f, 2.0f);
+		glm::ivec2 B(4.0f, 16.0f);
+
+		B = B / A;
+		Error += B == glm::ivec2(4, 8) ? 0 : 1;
+
+		B = B / 2;
 		Error += B == glm::ivec2(2, 4) ? 0 : 1;
 	}
 	{
