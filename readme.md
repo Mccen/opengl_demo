@@ -105,7 +105,7 @@ target_link_libraries(main PRIVATE glm::glm)
 
 ## Release notes
 
-### [GLM 1.0.1](https://github.com/g-truc/glm) - 2024-02-XX
+### [GLM 1.0.1](https://github.com/g-truc/glm/releases/tag/1.0.1) - 2024-02-26
 
 #### Features:
 - Added C++17 [[nodiscard]] support
