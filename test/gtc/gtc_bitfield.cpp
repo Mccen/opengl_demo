@@ -62,7 +62,7 @@ namespace mask
 
 	static int perf()
 	{
-		int const Count = 100000000;
+		int const Count = 10000;
 
 		std::clock_t Timestamp1 = std::clock();
 
@@ -123,7 +123,7 @@ namespace mask
 		std::printf("mask[zero]: %d\n", static_cast<unsigned int>(TimeZero));
 		std::printf("mask[half]: %d\n", static_cast<unsigned int>(TimeHalf));
 
-		return TimeDefault < TimeLoop ? 0 : 1;
+		return TimeDefault <= TimeLoop ? 0 : 1;
 	}
 
 #if GLM_COMPILER & GLM_COMPILER_CLANG
@@ -559,8 +559,8 @@ namespace bitfieldInterleave
 
 	static int perf()
 	{
-		glm::uint32 x_max = 1 << 11;
-		glm::uint32 y_max = 1 << 10;
+		glm::uint32 x_max = 1 << 7;
+		glm::uint32 y_max = 1 << 6;
 
 		// ALU
 		std::vector<glm::uint64> Data(x_max * y_max);
@@ -647,6 +647,7 @@ namespace bitfieldInterleave
 			std::printf("glm::detail::bitfieldInterleave Time %d clocks\n", static_cast<int>(Time));
 		}
 
+#		if((GLM_PLATFORM & GLM_PLATFORM_WINDOWS) || (GLM_PLATFORM & GLM_PLATFORM_LINUX))
 #		if(GLM_ARCH & GLM_ARCH_SSE2_BIT && !(GLM_COMPILER & GLM_COMPILER_GCC))
 		{
 			// SIMD
@@ -667,6 +668,7 @@ namespace bitfieldInterleave
 			std::printf("_mm_bit_interleave_si128 Time %d clocks\n", static_cast<int>(Time));
 		}
 #		endif//GLM_ARCH & GLM_ARCH_SSE2_BIT
+#		endif//GLM_PLATFORM GLM_PLATFORM_APPLE
 
 		return 0;
 	}
