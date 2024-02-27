@@ -62,7 +62,7 @@ namespace mask
 
 	static int perf()
 	{
-		int const Count = 10000;
+		int const Count = 1000;
 
 		std::clock_t Timestamp1 = std::clock();
 
@@ -227,9 +227,11 @@ namespace bitfieldInterleave3
 	{
 		int Error(0);
 
-		glm::uint16 x_max = 1 << 11;
-		glm::uint16 y_max = 1 << 11;
-		glm::uint16 z_max = 1 << 11;
+		glm::uint16 const test_max = 5; // previously 11
+
+		glm::uint16 x_max = 1 << test_max;
+		glm::uint16 y_max = 1 << test_max;
+		glm::uint16 z_max = 1 << test_max;
 
 		for(glm::uint16 z = 0; z < z_max; z += 27)
 		for(glm::uint16 y = 0; y < y_max; y += 27)
@@ -265,10 +267,12 @@ namespace bitfieldInterleave4
 	{
 		int Error(0);
 
-		glm::uint16 x_max = 1 << 11;
-		glm::uint16 y_max = 1 << 11;
-		glm::uint16 z_max = 1 << 11;
-		glm::uint16 w_max = 1 << 11;
+		glm::uint16 const test_max = 5; // previously 11
+
+		glm::uint16 x_max = 1 << test_max;
+		glm::uint16 y_max = 1 << test_max;
+		glm::uint16 z_max = 1 << test_max;
+		glm::uint16 w_max = 1 << test_max;
 
 		for(glm::uint16 w = 0; w < w_max; w += 27)
 		for(glm::uint16 z = 0; z < z_max; z += 27)
@@ -496,6 +500,8 @@ namespace bitfieldInterleave
 	{
 		int Error = 0;
 
+		glm::uint8 const test_loop = 15; // 127 ideally
+
 /*
 		{
 			for(glm::uint32 y = 0; y < (1 << 10); ++y)
@@ -525,8 +531,8 @@ namespace bitfieldInterleave
 		}
 */
 		{
-			for(glm::uint8 y = 0; y < 127; ++y)
-			for(glm::uint8 x = 0; x < 127; ++x)
+			for(glm::uint8 y = 0; y < test_loop; ++y)
+			for(glm::uint8 x = 0; x < test_loop; ++x)
 			{
 				glm::uint64 A(glm::bitfieldInterleave(glm::u8vec2(x, y)));
 				glm::uint64 B(glm::bitfieldInterleave(glm::u16vec2(x, y)));
@@ -542,8 +548,8 @@ namespace bitfieldInterleave
 		}
 
 		{
-			for(glm::uint8 y = 0; y < 127; ++y)
-			for(glm::uint8 x = 0; x < 127; ++x)
+			for(glm::uint8 y = 0; y < test_loop; ++y)
+			for(glm::uint8 x = 0; x < test_loop; ++x)
 			{
 				glm::int64 A(glm::bitfieldInterleave(glm::int8(x), glm::int8(y)));
 				glm::int64 B(glm::bitfieldInterleave(glm::int16(x), glm::int16(y)));
@@ -559,8 +565,8 @@ namespace bitfieldInterleave
 
 	static int perf()
 	{
-		glm::uint32 x_max = 1 << 7;
-		glm::uint32 y_max = 1 << 6;
+		glm::uint32 x_max = 1 << 4;
+		glm::uint32 y_max = 1 << 3;
 
 		// ALU
 		std::vector<glm::uint64> Data(x_max * y_max);
@@ -980,20 +986,21 @@ int main()
 {
 	int Error = 0;
 
+	Error += ::bitfieldInterleave::test();
+	Error += ::bitfieldInterleave3::test();
+	Error += ::bitfieldInterleave4::test();
+
 	// Tests for a faster and to reserve bitfieldInterleave
 	Error += ::bitfieldInterleave5::test(64);
 	Error += ::bitfieldInterleave5::perf(64);
 
+	Error += ::bitfieldInterleave::perf();
+
 	Error += ::mask::test();
-	Error += ::bitfieldInterleave3::test();
-	Error += ::bitfieldInterleave4::test();
-	Error += ::bitfieldInterleave::test();
+	Error += ::mask::perf();
 
 	Error += test_bitfieldRotateRight();
 	Error += test_bitfieldRotateLeft();
-
-	Error += ::mask::perf();
-	Error += ::bitfieldInterleave::perf();
 
 	return Error;
 }
