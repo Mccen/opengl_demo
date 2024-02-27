@@ -653,6 +653,7 @@ namespace bitfieldInterleave
 			std::printf("glm::detail::bitfieldInterleave Time %d clocks\n", static_cast<int>(Time));
 		}
 
+/* Time out on C.I.?
 #		if((GLM_PLATFORM & GLM_PLATFORM_WINDOWS) || (GLM_PLATFORM & GLM_PLATFORM_LINUX))
 #		if(GLM_ARCH & GLM_ARCH_SSE2_BIT && !(GLM_COMPILER & GLM_COMPILER_GCC))
 		{
@@ -675,6 +676,7 @@ namespace bitfieldInterleave
 		}
 #		endif//GLM_ARCH & GLM_ARCH_SSE2_BIT
 #		endif//GLM_PLATFORM GLM_PLATFORM_APPLE
+*/
 
 		return 0;
 	}
