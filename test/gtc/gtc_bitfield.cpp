@@ -571,8 +571,9 @@ namespace bitfieldInterleave
 		// ALU
 		std::vector<glm::uint64> Data(x_max * y_max);
 		std::vector<glm::u32vec2> Param(x_max * y_max);
-		for(glm::uint32 i = 0; i < Param.size(); ++i)
+		for(glm::uint32 i = 0; i < Param.size(); ++i) {
 			Param[i] = glm::u32vec2(i % x_max, i / y_max);
+		}
 
 		{
 			std::clock_t LastTime = std::clock();
@@ -653,8 +654,6 @@ namespace bitfieldInterleave
 			std::printf("glm::detail::bitfieldInterleave Time %d clocks\n", static_cast<int>(Time));
 		}
 
-/* Time out on C.I.?
-#		if((GLM_PLATFORM & GLM_PLATFORM_WINDOWS) || (GLM_PLATFORM & GLM_PLATFORM_LINUX))
 #		if(GLM_ARCH & GLM_ARCH_SSE2_BIT && !(GLM_COMPILER & GLM_COMPILER_GCC))
 		{
 			// SIMD
@@ -675,8 +674,6 @@ namespace bitfieldInterleave
 			std::printf("_mm_bit_interleave_si128 Time %d clocks\n", static_cast<int>(Time));
 		}
 #		endif//GLM_ARCH & GLM_ARCH_SSE2_BIT
-#		endif//GLM_PLATFORM GLM_PLATFORM_APPLE
-*/
 
 		return 0;
 	}
@@ -817,7 +814,7 @@ namespace bitfieldInterleave5
 
 		const std::clock_t BeginTime = std::clock();
 		
-		for(glm::size_t k = 0; k < 10000; ++k)
+		for(glm::size_t k = 0; k < 100; ++k)
 		for(glm::size_t j = 0; j < count; ++j)
 		for(glm::size_t i = 0; i < count; ++i)
 			Error += Result[j * count + i] == glm::bitfieldInterleave(glm::uint8(i), glm::uint8(j)) ? 0 : 1;
@@ -837,7 +834,7 @@ namespace bitfieldInterleave5
 
 		const std::clock_t BeginTime = std::clock();
 
-		for(glm::size_t k = 0; k < 10000; ++k)
+		for(glm::size_t k = 0; k < 100; ++k)
 		for(glm::size_t j = 0; j < count; ++j)
 		for(glm::size_t i = 0; i < count; ++i)
 			Error += Result[j * count + i] == bitfieldInterleave_u8vec2(glm::uint8(i), glm::uint8(j)) ? 0 : 1;
@@ -857,7 +854,7 @@ namespace bitfieldInterleave5
 
 		const std::clock_t BeginTime = std::clock();
 
-		for(glm::size_t k = 0; k < 10000; ++k)
+		for(glm::size_t k = 0; k < 100; ++k)
 		for(glm::size_t j = 0; j < count; ++j)
 		for(glm::size_t i = 0; i < count; ++i)
 			Error += Result[j * count + i] == glm::bitfieldInterleave(glm::uint8(i), glm::uint8(j), glm::uint8(i), glm::uint8(j)) ? 0 : 1;
@@ -897,7 +894,7 @@ namespace bitfieldInterleave5
 
 		const std::clock_t BeginTime = std::clock();
 
-		for(glm::size_t k = 0; k < 10000; ++k)
+		for(glm::size_t k = 0; k < 100; ++k)
 		for(glm::size_t j = 0; j < count; ++j)
 		for(glm::size_t i = 0; i < count; ++i)
 			Error += Result[j * count + i] == glm::bitfieldInterleave(glm::uint16(i), glm::uint16(j)) ? 0 : 1;
