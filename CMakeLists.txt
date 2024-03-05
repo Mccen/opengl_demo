@@ -21,7 +21,7 @@ if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
 option(GLM_BUILD_LIBRARY "Build dynamic/static library" ON)
-option(GLM_BUILD_TESTS "Build the test programs" ${GLM_IS_MASTER_PROJECT})
+option(GLM_BUILD_TESTS "Build the test programs" OFF)
 option(GLM_BUILD_INSTALL "Generate the install target" ${GLM_IS_MASTER_PROJECT})
 
 include(GNUInstallDirs)

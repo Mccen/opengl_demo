@@ -95,7 +95,7 @@ include(FetchContent)
 FetchContent_Declare(
 	glm
 	GIT_REPOSITORY	https://github.com/g-truc/glm.git
-	GIT_TAG 	bf71a834948186f4097caa076cd2663c69a10e1e #refs/tags/0.9.9.8
+	GIT_TAG 	bf71a834948186f4097caa076cd2663c69a10e1e #refs/tags/1.0.1
 )
 
 FetchContent_MakeAvailable(glm)
@@ -104,6 +104,11 @@ target_link_libraries(main PRIVATE glm::glm)
 ```
 
 ## Release notes
+
+### [GLM 1.0.2](https://github.com/g-truc/glm/tree/master) - 2024-0X-XX
+
+#### Improvements:
+- Unit tests are not build by default, `GLM_BUILD_TESTS` set to `ON` required.
 
 ### [GLM 1.0.1](https://github.com/g-truc/glm/releases/tag/1.0.1) - 2024-02-26
 

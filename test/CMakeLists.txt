@@ -3,6 +3,10 @@ option(GLM_QUIET "No CMake Message" OFF)
 option(GLM_TEST_ENABLE "Build unit tests" ON)
 option(GLM_PERF_TEST_ENABLE "Build perf tests" OFF)
 
+if(GLM_PERF_TEST_ENABLE)
+	add_definitions(-DGLM_TEST_PERF)
+endif()
+
 # Compiler and default options
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
