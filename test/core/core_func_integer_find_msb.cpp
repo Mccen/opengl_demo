@@ -39,7 +39,7 @@ static int nlz1a(unsigned x) {
    if ((x >> 24) == 0) {n = n + 8; x = x << 8;}
    if ((x >> 28) == 0) {n = n + 4; x = x << 4;}
    if ((x >> 30) == 0) {n = n + 2; x = x << 2;}
-   n = n - (x >> 31);
+   n = n - static_cast<int>(x >> 31);
    return n;
 }
 // On basic Risc, 12 to 20 instructions.
@@ -54,7 +54,7 @@ static int nlz2(unsigned x) {
    y = x >> 4;  if (y != 0) {n = n - 4;  x = y;}
    y = x >> 2;  if (y != 0) {n = n - 2;  x = y;}
    y = x >> 1;  if (y != 0) return n - 2;
-   return n - x;
+   return n - static_cast<int>(x);
 }
 
 // As above but coded as a loop for compactness:
@@ -69,15 +69,15 @@ static int nlz2a(unsigned x) {
       y = x >> c;  if (y != 0) {n = n - c;  x = y;}
       c = c >> 1;
    } while (c != 0);
-   return n - x;
+   return n - static_cast<int>(x);
 }
 
-static int nlz3(int x) {
+static int nlz3(unsigned x) {
    int y, n;
 
    n = 0;
-   y = x;
-L: if (x < 0) return n;
+   y = static_cast<int>(x);
+L: if (x > 0x7fffffff) return n;
    if (y == 0) return 32 - n;
    n = n + 1;
    x = x << 1;
@@ -98,19 +98,19 @@ static int nlz4(unsigned x) {
    n = 16 - m;          // is nonzero, set n = 0 and
    x = x >> m;          // shift x right 16.
                         // Now x is of the form 0000xxxx.
-   y = x - 0x100;       // If positions 8-15 are 0,
-   m = (y >> 16) & 8;   // add 8 to n and shift x left 8.
-   n = n + m;
+   y = static_cast<int>(x) - 0x100;
+   m = (y >> 16) & 8;   // If positions 8-15 are 0,
+   n = n + m;           // add 8 to n and shift x left 8.
    x = x << m;
 
-   y = x - 0x1000;      // If positions 12-15 are 0,
-   m = (y >> 16) & 4;   // add 4 to n and shift x left 4.
-   n = n + m;
+   y = static_cast<int>(x) - 0x1000;
+   m = (y >> 16) & 4;   // If positions 12-15 are 0,
+   n = n + m;           // add 4 to n and shift x left 4.
    x = x << m;
 
-   y = x - 0x4000;      // If positions 14-15 are 0,
-   m = (y >> 16) & 2;   // add 2 to n and shift x left 2.
-   n = n + m;
+   y = static_cast<int>(x) - 0x4000;
+   m = (y >> 16) & 2;   // If positions 14-15 are 0,
+   n = n + m;           // add 2 to n and shift x left 2.
    x = x << m;
 
    y = x >> 14;         // Set y = 0, 1, 2, or 3.
@@ -305,8 +305,8 @@ static int nlz10b(unsigned x)
 	return table[x >> 26];
 }
 
-int errors;
-static void error(int x, int y)
+static int errors;
+static void error(unsigned x, int y)
 {
 	errors = errors + 1;
 	std::printf("Error for x = %08x, got %d\n", x, y);

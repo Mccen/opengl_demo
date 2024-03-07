@@ -176,7 +176,7 @@ static int pop9(unsigned x)
 	return static_cast<int>(y);
 }
 
-int errors;
+static int errors;
 static void error(int x, int y)
 {
 	errors = errors + 1;

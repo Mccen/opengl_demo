@@ -45,7 +45,7 @@ static int ntz3(unsigned x)
 	if ((x & 0x000000FF) == 0) {n = n + 8; x = x >> 8;}
 	if ((x & 0x0000000F) == 0) {n = n + 4; x = x >> 4;}
 	if ((x & 0x00000003) == 0) {n = n + 2; x = x >> 2;}
-	return n - (x & 1);
+	return n - static_cast<int>(x & 1);
 }
 
 static int ntz4(unsigned x)
@@ -74,7 +74,7 @@ static int ntz4a(unsigned x)
 	y = x << 8;  if (y != 0) {n = n - 8;  x = y;}
 	y = x << 4;  if (y != 0) {n = n - 4;  x = y;}
 	y = x << 2;  if (y != 0) {n = n - 2;  x = y;}
-	n = n - ((x << 1) >> 31);
+	n = n - static_cast<int>((x << 1) >> 31);
 	return n;
 }
 
@@ -145,7 +145,8 @@ could then all run in parallel). */
 
 static int ntz7(unsigned x)
 {
-	unsigned y, bz, b4, b3, b2, b1, b0;
+	unsigned y;
+	int bz, b4, b3, b2, b1, b0;
 
 	y = x & -x;               // Isolate rightmost 1-bit.
 	bz = y ? 0 : 1;           // 1 if y = 0.
@@ -279,8 +280,8 @@ static int ntz11(unsigned int n) {
 #	pragma warning(pop)
 #endif
 
-int errors;
-static void error(int x, int y) {
+static int errors;
+static void error(unsigned x, int y) {
    errors = errors + 1;
    std::printf("Error for x = %08x, got %d\n", x, y);
 }
@@ -353,7 +354,7 @@ int main()
 	for(std::size_t k = 0; k < Count; ++k)
 	for(i = 0; i < n; i += 2)
 	{
-		m = test[i+1];
+		m = static_cast<int>(test[i+1]);
 		if(m > 8)
 			m = 8;
 		if(ntz5(static_cast<char>(test[i])) != m)
