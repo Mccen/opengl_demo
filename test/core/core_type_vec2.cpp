@@ -400,6 +400,11 @@ static int test_swizzle()
 
 int main()
 {
+	// Suppress unused variable warnings
+	(void)g1;
+	(void)g2;
+	(void)g3;
+
 	int Error = 0;
 
 	Error += test_size();

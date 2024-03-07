@@ -770,6 +770,11 @@ static int test_simd_gen()
 */
 int main()
 {
+	// Suppress unused variable warnings
+	(void)g1;
+	(void)g2;
+	(void)g3;
+
 	int Error = 0;
 
 	//Error += test_simd_gen();
