@@ -208,7 +208,7 @@ int main()
 	TimestampBeg = std::clock();
 	for (std::size_t k = 0; k < Count; ++k)
 	for (i = 0; i < n; i += 2) {
-		if (pop0(test[i]) != test[i+1]) error(test[i], pop0(test[i]));}
+		if (pop0(test[i]) != static_cast<int>(test[i+1])) error(test[i], pop0(test[i]));}
 	TimestampEnd = std::clock();
 
 	std::printf("pop0: %d clocks\n", static_cast<int>(TimestampEnd - TimestampBeg));
@@ -216,7 +216,7 @@ int main()
 	TimestampBeg = std::clock();
 	for (std::size_t k = 0; k < Count; ++k)
 	for (i = 0; i < n; i += 2) {
-		if (pop1(test[i]) != test[i+1]) error(test[i], pop1(test[i]));}
+		if (pop1(test[i]) != static_cast<int>(test[i+1])) error(test[i], pop1(test[i]));}
 	TimestampEnd = std::clock();
 
 	std::printf("pop1: %d clocks\n", static_cast<int>(TimestampEnd - TimestampBeg));
@@ -224,7 +224,7 @@ int main()
 	TimestampBeg = std::clock();
 	for (std::size_t k = 0; k < Count; ++k)
 	for (i = 0; i < n; i += 2) {
-		if (pop2(test[i]) != test[i+1]) error(test[i], pop2(test[i]));}
+		if (pop2(test[i]) != static_cast<int>(test[i+1])) error(test[i], pop2(test[i]));}
 	TimestampEnd = std::clock();
 
 	std::printf("pop2: %d clocks\n", static_cast<int>(TimestampEnd - TimestampBeg));
@@ -232,7 +232,7 @@ int main()
 	TimestampBeg = std::clock();
 	for (std::size_t k = 0; k < Count; ++k)
 	for (i = 0; i < n; i += 2) {
-		if (pop3(test[i]) != test[i+1]) error(test[i], pop3(test[i]));}
+		if (pop3(test[i]) != static_cast<int>(test[i+1])) error(test[i], pop3(test[i]));}
 	TimestampEnd = std::clock();
 
 	std::printf("pop3: %d clocks\n", static_cast<int>(TimestampEnd - TimestampBeg));
@@ -240,7 +240,7 @@ int main()
 	TimestampBeg = std::clock();
 	for (std::size_t k = 0; k < Count; ++k)
 	for (i = 0; i < n; i += 2) {
-		if (pop4(test[i]) != test[i+1]) error(test[i], pop4(test[i]));}
+		if (pop4(test[i]) != static_cast<int>(test[i+1])) error(test[i], pop4(test[i]));}
 	TimestampEnd = std::clock();
 
 	std::printf("pop4: %d clocks\n", static_cast<int>(TimestampEnd - TimestampBeg));
@@ -248,7 +248,7 @@ int main()
 	TimestampBeg = std::clock();
 	for (std::size_t k = 0; k < Count; ++k)
 	for (i = 0; i < n; i += 2) {
-		if (pop5(test[i]) != test[i+1]) error(test[i], pop5(test[i]));}
+		if (pop5(test[i]) != static_cast<int>(test[i+1])) error(test[i], pop5(test[i]));}
 	TimestampEnd = std::clock();
 
 	std::printf("pop5: %d clocks\n", static_cast<int>(TimestampEnd - TimestampBeg));
@@ -256,7 +256,7 @@ int main()
 	TimestampBeg = std::clock();
 	for (std::size_t k = 0; k < Count; ++k)
 	for (i = 0; i < n; i += 2) {
-		if (pop5a(test[i]) != test[i+1]) error(test[i], pop5a(test[i]));}
+		if (pop5a(test[i]) != static_cast<int>(test[i+1])) error(test[i], pop5a(test[i]));}
 	TimestampEnd = std::clock();
 
 	std::printf("pop5a: %d clocks\n", static_cast<int>(TimestampEnd - TimestampBeg));
@@ -264,7 +264,7 @@ int main()
 	TimestampBeg = std::clock();
 	for (std::size_t k = 0; k < Count; ++k)
 	for (i = 0; i < n; i += 2) {
-		if (pop6(test[i]) != test[i+1]) error(test[i], pop6(test[i]));}
+		if (pop6(test[i]) != static_cast<int>(test[i+1])) error(test[i], pop6(test[i]));}
 	TimestampEnd = std::clock();
 
 	std::printf("pop6: %d clocks\n", static_cast<int>(TimestampEnd - TimestampBeg));
@@ -273,7 +273,7 @@ int main()
 	for (std::size_t k = 0; k < Count; ++k)
 	for (i = 0; i < n; i += 2) {
 		if ((test[i] & 0xffffff00) == 0)
-		if (pop7(test[i]) != test[i+1]) error(test[i], pop7(test[i]));}
+		if (pop7(test[i]) != static_cast<int>(test[i+1])) error(test[i], pop7(test[i]));}
 	TimestampEnd = std::clock();
 
 	std::printf("pop7: %d clocks\n", static_cast<int>(TimestampEnd - TimestampBeg));
@@ -282,7 +282,7 @@ int main()
 	for (std::size_t k = 0; k < Count; ++k)
 	for (i = 0; i < n; i += 2) {
 		if ((test[i] & 0xffffff80) == 0)
-		if (pop8(test[i]) != test[i+1]) error(test[i], pop8(test[i]));}
+		if (pop8(test[i]) != static_cast<int>(test[i+1])) error(test[i], pop8(test[i]));}
 	TimestampEnd = std::clock();
 
 	std::printf("pop8: %d clocks\n", static_cast<int>(TimestampEnd - TimestampBeg));
@@ -291,7 +291,7 @@ int main()
 	for (std::size_t k = 0; k < Count; ++k)
 	for (i = 0; i < n; i += 2) {
 		if ((test[i] & 0xffff8000) == 0)
-		if (pop9(test[i]) != test[i+1]) error(test[i], pop9(test[i]));}
+		if (pop9(test[i]) != static_cast<int>(test[i+1])) error(test[i], pop9(test[i]));}
 	TimestampEnd = std::clock();
 
 	std::printf("pop9: %d clocks\n", static_cast<int>(TimestampEnd - TimestampBeg));

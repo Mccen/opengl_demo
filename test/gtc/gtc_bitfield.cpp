@@ -34,7 +34,7 @@ namespace mask
 
 	static inline int mask_mix(int Bits)
 	{
-		return Bits >= sizeof(int) * 8 ? 0xffffffff : (static_cast<int>(1) << Bits) - static_cast<int>(1);
+		return Bits >= static_cast<int>(sizeof(int) * 8) ? 0xffffffff : (static_cast<int>(1) << Bits) - static_cast<int>(1);
 	}
 
 #if GLM_COMPILER & GLM_COMPILER_CLANG
