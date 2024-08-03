@@ -1,0 +1,2 @@
+C:\environment\mingw64\bin\ar.exe qc liblibsoil2.a CMakeFiles/libsoil2.dir/SOIL2/SOIL2.c.obj CMakeFiles/libsoil2.dir/SOIL2/image_DXT.c.obj CMakeFiles/libsoil2.dir/SOIL2/image_helper.c.obj CMakeFiles/libsoil2.dir/SOIL2/wfETC.c.obj
+C:\environment\mingw64\bin\ranlib.exe liblibsoil2.a

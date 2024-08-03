@@ -1,0 +1,20 @@
+lib/CMakeFiles/soil2.dir/SOIL2/image_helper.c.obj: \
+ C:\Users\zdzak\Documents\vscode\opengl_book\lib\SOIL2\image_helper.c \
+ C:\Users\zdzak\Documents\vscode\opengl_book\lib\SOIL2\image_helper.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/stdlib.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/corecrt.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/_mingw.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/_mingw_mac.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/_mingw_secapi.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/vadefs.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/sdks/_mingw_ddk.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/corecrt_wstdlib.h \
+ C:/environment/mingw64/lib/gcc/x86_64-w64-mingw32/13.2.0/include/limits.h \
+ C:/environment/mingw64/lib/gcc/x86_64-w64-mingw32/13.2.0/include/syslimits.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/limits.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/crtdefs.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/sec_api/stdlib_s.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/malloc.h \
+ C:/environment/mingw64/lib/gcc/x86_64-w64-mingw32/13.2.0/include/mm_malloc.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/errno.h \
+ C:/environment/mingw64/x86_64-w64-mingw32/include/math.h

@@ -1,0 +1,10 @@
+C:/Users/zdzak/Documents/Visual Studio 2022/repo/opengl_book/out/build/x64-release/CMakeFiles/demo.dir
+C:/Users/zdzak/Documents/Visual Studio 2022/repo/opengl_book/out/build/x64-release/CMakeFiles/edit_cache.dir
+C:/Users/zdzak/Documents/Visual Studio 2022/repo/opengl_book/out/build/x64-release/CMakeFiles/rebuild_cache.dir
+C:/Users/zdzak/Documents/Visual Studio 2022/repo/opengl_book/out/build/x64-release/src/CMakeFiles/edit_cache.dir
+C:/Users/zdzak/Documents/Visual Studio 2022/repo/opengl_book/out/build/x64-release/src/CMakeFiles/rebuild_cache.dir
+C:/Users/zdzak/Documents/Visual Studio 2022/repo/opengl_book/out/build/x64-release/lib/CMakeFiles/libsoil2.dir
+C:/Users/zdzak/Documents/Visual Studio 2022/repo/opengl_book/out/build/x64-release/lib/CMakeFiles/libglfw.dir
+C:/Users/zdzak/Documents/Visual Studio 2022/repo/opengl_book/out/build/x64-release/lib/CMakeFiles/libglad.dir
+C:/Users/zdzak/Documents/Visual Studio 2022/repo/opengl_book/out/build/x64-release/lib/CMakeFiles/edit_cache.dir
+C:/Users/zdzak/Documents/Visual Studio 2022/repo/opengl_book/out/build/x64-release/lib/CMakeFiles/rebuild_cache.dir
