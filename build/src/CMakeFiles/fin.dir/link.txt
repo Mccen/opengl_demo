@@ -1,3 +1,0 @@
-C:\environment\mingw64\bin\cmake.exe -E rm -f CMakeFiles\fin.dir/objects.a
-C:\environment\mingw64\bin\ar.exe qc CMakeFiles\fin.dir/objects.a @CMakeFiles\fin.dir\objects1.rsp
-C:\environment\mingw64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\fin.dir/objects.a -Wl,--no-whole-archive -o C:\Users\zdzak\Documents\vscode\opengl_book\output\fin.exe -Wl,--out-implib,libfin.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\fin.dir\linkLibs.rsp
