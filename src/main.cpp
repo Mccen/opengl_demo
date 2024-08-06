@@ -54,14 +54,14 @@ void display(GLFWwindow *window)
 	glUniformMatrix4fv(glGetUniformLocation(program[0], "model"), 1, GL_FALSE, value_ptr(lmodel));
 	glUniformMatrix4fv(glGetUniformLocation(program[0], "view"), 1, GL_FALSE, value_ptr(view));
 	glUniformMatrix4fv(glGetUniformLocation(program[0], "projection"), 1, GL_FALSE, value_ptr(projection));
-	glBindVertexArray(obj[0].VAO);
+	glBindVertexArray(obj[1].VAO);
 	glUniform1ui(glGetUniformLocation(program[0], "CC"), 2);
 	glUniform1i(glGetUniformLocation(program[0], "fTex"), 0);
-	glDrawElements(GL_TRIANGLES, obj[0].indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, obj[1].indices.size(), GL_UNSIGNED_INT, 0);
 
 
 	glUseProgram(program[1]);
-	glBindVertexArray(obj[1].VAO);
+	glBindVertexArray(obj[0].VAO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex[0]);
 	light->position = (lmodel*vec4(light->position,1.0f));
@@ -70,7 +70,7 @@ void display(GLFWwindow *window)
 	glUniformMatrix4fv(glGetUniformLocation(program[1], "model"), 1, GL_FALSE, glm::value_ptr(model));
 	glUniformMatrix4fv(glGetUniformLocation(program[1], "view"), 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(glGetUniformLocation(program[1], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	glDrawElements(GL_TRIANGLES, obj[1].indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, obj[0].indices.size(), GL_UNSIGNED_INT, 0);
 
 
 	glDisable(GL_DEPTH_TEST);
