@@ -25,9 +25,6 @@ out vec4 color; // 输出颜色
 uniform Light light; // 光源数据
 uniform Material material; // 材质数据
 uniform sampler2D fTex; // 纹理采样器
-uniform mat4 view; // 视图矩阵
-uniform mat4 projection; // 投影矩阵
-
 
 void main() {
     // 计算并标准化视图法线向量
