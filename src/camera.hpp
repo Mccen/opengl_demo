@@ -1,7 +1,5 @@
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
-int width, height;
+int width = 600, height=400;
 bool mouseGet = true;
 bool keyFirst = true;
 glm::vec3 pos = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -19,30 +17,33 @@ GLdouble lastX = width / 2, lastY = height / 2;
 GLfloat Cyaw = -90.0f, Cpitch = 0.0f;
 GLfloat pov = 35.0f;
 GLfloat cubeX, cubeY, cubeZ;
-glm::mat4 model, view, per;
+glm::mat4 model(1.0f), view(1.0f), projection(1.0f);
 
 glm::mat4 modelMatrix()
 {
-	glm::mat4 model = glm::mat4(1.0);
 	model = translate(model, glm::vec3(cubeX, cubeY, cubeZ));
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 	return model;
 }
 glm::mat4 viewMatrix()
 {
 
-	glm::mat4 view = glm::mat4(1.0);
 	view = lookAt(pos, pos + CF, CU);
 	return view;
 }
 glm::mat4 perMatrix()
 {
-	glm::mat4 per = glm::mat4(1.0);
+	GLfloat aspect = GLfloat(width / height);
 	GLfloat near = 0.1f;
 	GLfloat far = 100.0f;
-	per = glm::perspective(glm::radians(pov), GLfloat(width / height), near, far);
-	return per;
+	projection = glm::perspective(glm::radians(pov*float(sqrt(aspect))), aspect, near, far);
+	return projection;
 }
-
+void updateUniform()
+{
+	viewMatrix();
+	perMatrix();
+}
 void mouseCallback(GLFWwindow *window, double xpos, double ypos)
 {
 	if (mouse_is_first)
@@ -76,11 +77,12 @@ void closeCallback(GLFWwindow *window) // 窗口关闭时执行
 {
 	std::cout << "window close" << std::endl;
 }
-void reshapeCallback(GLFWwindow *window, int width, int height) // 窗口大小改变时执行
+void reshapeCallback(GLFWwindow *window, int newwidth, int newheight) // 窗口大小改变时执行
 {
+	width = newwidth;
+	height = newheight;
 	glViewport(0, 0, width, height);
 	float aspect = width / (float)height;
-	per = glm::perspective(glm::radians(60.0f), aspect, 0.1f, 100.0f);
 }
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) // 按键按下时执行，适合快捷键操作
 {
