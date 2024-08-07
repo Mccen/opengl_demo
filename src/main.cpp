@@ -2,75 +2,79 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <SOIL2/stb_image.h>
+#include <vector>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <sstream>
 #include <fstream>
 #include <string>
-#include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 #include "camera.hpp"
 #include "load.hpp"
 #include "light.hpp"
 
 #define VAOS 2
-GLuint vao[VAOS];
-#define PROS 2
-GLuint program[PROS];
-#define TEXS 1
-GLuint tex[TEXS];
-#define OBJS 2
-objLoader obj[OBJS];
+static GLuint vao[VAOS];
+#define PROGRAMS 2
+static GLuint program[PROGRAMS];
+#define TEXTURES 2
+static GLuint tex[TEXTURES];
+#define OBJECTS 2
+static objLoader obj[OBJECTS];
+#define LIGHTS 1
+static Light light[LIGHTS];
+#define MATERIALS 1
+static Material material[MATERIALS];
 
-Light light[1];
-Material material[1];
-
-std::vector<GLuint> ebo1 = {2, 1, 0,
-							3, 2, 0};
-GLuint globalAmbLoc,ambLoc, diffLoc, specLoc, posLoc, dirLoc, attLoc, spotCutoffLoc, spotExponentLoc, spotDirLoc;
+//使用枚举提高可读性
+enum {
+	Cube,
+	Sphere
+};
 void init(GLFWwindow *window)
 {
 	cubeX = 0.0f;
 	cubeY = 0.0f;
-	cubeZ = -1.0f;
-	light[0] = Light(glm::vec4(1.0f, 1.0f, 1.0f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), vec3(2.0f,2.0f,2.0f));
-	material[0] = Material(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 50.0f);
+	cubeZ = -2.0f;
+	modelMatrix();
+	Light(light[0], glm::vec4(1.0f, 1.0f, 1.0f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
+	Material(material[0], glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 50.0f);
 	glfwGetFramebufferSize(window, &width, &height);
 }
 
-void display(GLFWwindow *window)
+void display()
 {
 	float currentTime = glfwGetTime();
 	glClearColor(0.3, 0.5, 0.4, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 
-	mat4 lmodel = mat4(1.0f);
-	lmodel = rotate(lmodel, radians(currentTime)*20, vec3(0.0f, 1.0f, 0.0f));
-	lmodel = translate(lmodel, vec3(2.0f,2.0f,2.0f));
-	lmodel = scale(lmodel, vec3(0.2f, 0.2f, 0.2f));
+	glm::mat4 lmodel = glm::mat4(1.0f);
+	lmodel = rotate(lmodel, glm::radians(currentTime)*20, glm::vec3(0.0f, 1.0f, 0.0f));
+	lmodel = translate(lmodel, glm::vec3(2.0f,2.0f,2.0f));
+	lmodel = scale(lmodel, glm::vec3(0.2f, 0.2f, 0.2f));
 	glUseProgram(program[0]);
-	glUniformMatrix4fv(glGetUniformLocation(program[0], "model"), 1, GL_FALSE, value_ptr(lmodel));
+	glUniformMatrix4fv(glGetUniformLocation(program[0], "model"), 1, GL_FALSE, value_ptr(model*lmodel));
 	glUniformMatrix4fv(glGetUniformLocation(program[0], "view"), 1, GL_FALSE, value_ptr(view));
 	glUniformMatrix4fv(glGetUniformLocation(program[0], "projection"), 1, GL_FALSE, value_ptr(projection));
-	glBindVertexArray(obj[1].VAO);
+	glBindVertexArray(obj[Cube].VAO);
 	glUniform1ui(glGetUniformLocation(program[0], "CC"), 2);
 	glUniform1i(glGetUniformLocation(program[0], "fTex"), 0);
-	glDrawElements(GL_TRIANGLES, obj[1].indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, obj[Cube].indices.size(), GL_UNSIGNED_INT, 0);
 
 
 	glUseProgram(program[1]);
-	glBindVertexArray(obj[0].VAO);
+	glBindVertexArray(obj[Sphere].VAO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex[0]);
-	light->position = (lmodel*vec4(light->position,1.0f));
+	light->position = (lmodel*glm::vec4(light->position,1.0f));
 	light->updateUniform(program[1]);
 	material->updateUniform(program[1]);
 	glUniformMatrix4fv(glGetUniformLocation(program[1], "model"), 1, GL_FALSE, glm::value_ptr(model));
 	glUniformMatrix4fv(glGetUniformLocation(program[1], "view"), 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(glGetUniformLocation(program[1], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	glDrawElements(GL_TRIANGLES, obj[0].indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, obj[Sphere].indices.size(), GL_UNSIGNED_INT, 0);
 
 
 	glDisable(GL_DEPTH_TEST);
@@ -108,22 +112,23 @@ int main()
 	glFrontFace(GL_CCW);
 	// glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	program[0] = fileloader("shaders/mainv.glsl", "shaders/mainf.glsl");
-	program[1] = fileloader("shaders/lightv.glsl", "shaders/lightf.glsl");
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	vao[0] = getPoints("../resources/models/cube.txt", false, ebo1);
+	fileloader(program[0],"shaders/mainv.glsl", "shaders/mainf.glsl");
+	fileloader(program[1],"shaders/lightv.glsl", "shaders/lightf.glsl");
 
-	tex[0] = loadTexture("../resources/imgs/earth.jpg");
-	obj[0] = objLoader("../resources/models/sphere.obj");
-	obj[1] = objLoader("../resources/models/block.obj");
+	vao[0] = getPoints("../resources/models/cube.txt", false);
+
+	loadTexture(tex[0],"../resources/imgs/earth.jpg");
+	objLoader(obj[Cube],"../resources/models/block.obj");
+	objLoader(obj[Sphere],"../resources/models/sphere.obj");
 	while (!glfwWindowShouldClose(window))
 	{
 		deltaTime = glfwGetTime() - lastframe;
 		lastframe = glfwGetTime();
 		keyCallbackLongTime(window);
 		updateUniform();
-		display(window);
+		display();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

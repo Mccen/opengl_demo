@@ -15,14 +15,14 @@ GLfloat cameraX, cameraY, cameraZ;
 GLboolean mouse_is_first = true;
 GLdouble lastX = width / 2, lastY = height / 2;
 GLfloat Cyaw = -90.0f, Cpitch = 0.0f;
-GLfloat pov = 35.0f;
+GLfloat pov = 45.0f;
 GLfloat cubeX, cubeY, cubeZ;
 glm::mat4 model(1.0f), view(1.0f), projection(1.0f);
 
 glm::mat4 modelMatrix()
 {
 	model = translate(model, glm::vec3(cubeX, cubeY, cubeZ));
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
 	return model;
 }
 glm::mat4 viewMatrix()
@@ -82,7 +82,6 @@ void reshapeCallback(GLFWwindow *window, int newwidth, int newheight) // 窗口�
 	width = newwidth;
 	height = newheight;
 	glViewport(0, 0, width, height);
-	float aspect = width / (float)height;
 }
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) // 按键按下时执行，适合快捷键操作
 {

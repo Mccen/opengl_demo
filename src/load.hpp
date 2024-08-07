@@ -1,3 +1,4 @@
+#include <cstddef>
 struct Vertex {
     GLfloat position[3];
     GLfloat normal[3];
@@ -10,7 +11,7 @@ public:
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
 	objLoader(){}
-    objLoader(const char* addr) {
+    objLoader(objLoader &obj,const char* addr) {
         std::vector<GLfloat> tempVN, tempV, tempVT;
         std::vector<GLuint> tempVInd, tempVTInd, tempVNInd;
 
@@ -56,7 +57,14 @@ public:
             indices.push_back(i);
         }
         setupMesh();
-    }
+		tempV.clear();
+		tempVN.clear();
+		tempVT.clear();
+		tempVTInd.clear();
+		tempVNInd.clear();
+		tempVInd.clear();
+		obj = *this;
+	}
 
 private:
     void readVector(std::istringstream& iss, std::vector<GLfloat>& data) {
@@ -101,16 +109,17 @@ private:
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex,position));
 
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex,normal));
 
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoord));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex,texCoord));
 
         glBindVertexArray(0);
     }
+
 };
 void errorGet(GLuint shader)
 {
@@ -131,7 +140,7 @@ void errorGet(GLuint shader)
 	}
 }
 
-GLuint fileloader(const char *addrv, const char *addrf)
+void fileloader(GLuint &program,const char *addrv, const char *addrf)
 {
 	std::fstream filev(addrv, std::ios::in);
 	std::fstream filef(addrf, std::ios::in);
@@ -161,16 +170,16 @@ GLuint fileloader(const char *addrv, const char *addrf)
 	glShaderSource(fshader, 1, &fcode, NULL);
 	glCompileShader(fshader);
 	errorGet(fshader);
-	GLuint program = glCreateProgram();
+	program = glCreateProgram();
 	glAttachShader(program, vshader);
 	glAttachShader(program, fshader);
 	glLinkProgram(program);
 	glDeleteShader(vshader);
 	glDeleteShader(fshader);
-	return program;
+	//return program;
 }
 
-GLuint getPoints(const char *addr, bool enableEBO, std::vector<GLuint> ebo)
+GLuint getPoints(const char *addr, bool enableEBO)
 {
 	std::ifstream file(addr, std::ios::in);
 	if (!file.is_open())
@@ -189,16 +198,10 @@ GLuint getPoints(const char *addr, bool enableEBO, std::vector<GLuint> ebo)
 			points.push_back(stof(cell));
 		}
 	}
-	GLuint VAO, VBO, EBO;
+	GLuint VAO, VBO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	if (enableEBO)
-	{
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * ebo.size(), ebo.data(), GL_STATIC_DRAW);
-	}
 
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -214,9 +217,9 @@ GLuint getPoints(const char *addr, bool enableEBO, std::vector<GLuint> ebo)
 	return VAO;
 }
 
-GLuint loadTexture(const char *addr)
+void loadTexture(GLuint &texture,const char *addr)
 {
-	GLuint texture;
+	//texture = glCreateTextures(GL_TEXTURE_2D);
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -240,5 +243,5 @@ GLuint loadTexture(const char *addr)
 		exit(-1);
 	}
 	stbi_image_free(data);
-	return texture;
+	//return texture;
 }
