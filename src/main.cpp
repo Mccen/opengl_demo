@@ -13,6 +13,7 @@
 #include "camera.hpp"
 #include "load.hpp"
 #include "light.hpp"
+#include "shadow.hpp"
 
 #define VAOS 2
 static GLuint vao[VAOS];
@@ -27,10 +28,18 @@ static Light light[LIGHTS];
 #define MATERIALS 1
 static Material material[MATERIALS];
 
-//使用枚举提高可读性
-enum {
+// 使用枚举提高可读性
+// 模型
+enum
+{
 	Cube,
 	Sphere
+};
+// 着色器程序
+enum
+{
+	lightProgram,
+	mainProgram
 };
 void init(GLFWwindow *window)
 {
@@ -38,8 +47,15 @@ void init(GLFWwindow *window)
 	cubeY = 0.0f;
 	cubeZ = -2.0f;
 	modelMatrix();
-	Light(light[0], glm::vec4(1.0f, 1.0f, 1.0f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
-	Material(material[0], glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 50.0f);
+	fileloader(program[lightProgram], "shaders/lightv.glsl", "shaders/lightf.glsl");
+	fileloader(program[mainProgram], "shaders/mainv.glsl", "shaders/mainf.glsl");
+	vao[0] = getPoints("../resources/models/cube.txt", false);
+	loadTexture(tex[0], "../resources/imgs/earth.jpg");
+	objLoader(obj[Cube], "../resources/models/block.obj");
+	objLoader(obj[Sphere], "../resources/models/sphere.obj");
+	Light(light[0], glm::vec4(1.0f, 1.0f, 1.0f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 0.0f, 3.0f));
+	Material(material[0], glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 25.0f);
+	updateViewPort();
 	glfwGetFramebufferSize(window, &width, &height);
 }
 
@@ -50,41 +66,41 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 
-	glm::mat4 lmodel = glm::mat4(1.0f);
-	lmodel = rotate(lmodel, glm::radians(currentTime)*20, glm::vec3(0.0f, 1.0f, 0.0f));
-	lmodel = translate(lmodel, glm::vec3(2.0f,2.0f,2.0f));
-	lmodel = scale(lmodel, glm::vec3(0.2f, 0.2f, 0.2f));
-	glUseProgram(program[0]);
-	glUniformMatrix4fv(glGetUniformLocation(program[0], "model"), 1, GL_FALSE, value_ptr(model*lmodel));
-	glUniformMatrix4fv(glGetUniformLocation(program[0], "view"), 1, GL_FALSE, value_ptr(view));
-	glUniformMatrix4fv(glGetUniformLocation(program[0], "projection"), 1, GL_FALSE, value_ptr(projection));
+	glm::mat4 lmodel(1.0f);
+	lmodel = glm::rotate(lmodel, glm::radians(currentTime) * 30, glm::vec3(0.0f, 1.0f, 0.0f));
+	lmodel = glm::translate(lmodel, light[0].position);
+	lmodel = glm::scale(lmodel, glm::vec3(0.2f, 0.2f, 0.2f));
+	lmodel = model * lmodel;
+	glUseProgram(program[lightProgram]);
 	glBindVertexArray(obj[Cube].VAO);
-	glUniform1ui(glGetUniformLocation(program[0], "CC"), 2);
-	glUniform1i(glGetUniformLocation(program[0], "fTex"), 0);
+	glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "model"), 1, GL_FALSE, value_ptr(lmodel));
+	glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "view"), 1, GL_FALSE, value_ptr(view));
+	glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "projection"), 1, GL_FALSE, value_ptr(projection));
+	glUniform1ui(glGetUniformLocation(program[lightProgram], "CC"), 2);
+	glUniform1i(glGetUniformLocation(program[lightProgram], "fTex"), 0);
 	glDrawElements(GL_TRIANGLES, obj[Cube].indices.size(), GL_UNSIGNED_INT, 0);
 
-
-	glUseProgram(program[1]);
+	glUseProgram(program[mainProgram]);
 	glBindVertexArray(obj[Sphere].VAO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex[0]);
-	light->position = (lmodel*glm::vec4(light->position,1.0f));
-	light->updateUniform(program[1]);
-	material->updateUniform(program[1]);
-	glUniformMatrix4fv(glGetUniformLocation(program[1], "model"), 1, GL_FALSE, glm::value_ptr(model));
-	glUniformMatrix4fv(glGetUniformLocation(program[1], "view"), 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(glGetUniformLocation(program[1], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	light->updateUniform(program[mainProgram]);
+	material->updateUniform(program[mainProgram]);
+	glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "lmodel"), 1, GL_FALSE, glm::value_ptr(lmodel));
+	glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "model"), 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "view"), 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	glUniform2fv(glGetUniformLocation(program[mainProgram], "screenSize"), 1, glm::value_ptr(glm::vec2(width, height)));
 	glDrawElements(GL_TRIANGLES, obj[Sphere].indices.size(), GL_UNSIGNED_INT, 0);
 
-
 	glDisable(GL_DEPTH_TEST);
-	glUseProgram(program[0]);
-	glUniformMatrix4fv(glGetUniformLocation(program[0], "model"), 1, GL_FALSE, glm::value_ptr(model));
-	glUniformMatrix4fv(glGetUniformLocation(program[0], "view"), 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(glGetUniformLocation(program[0], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	glLineWidth(6);
+	glUseProgram(program[lightProgram]);
 	glBindVertexArray(vao[0]);
-	glUniform1ui(glGetUniformLocation(program[0], "CC"), 0);
+	glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "model"), 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "view"), 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	glLineWidth(6);
+	glUniform1ui(glGetUniformLocation(program[lightProgram], "CC"), 0);
 	glDrawArrays(GL_LINE_STRIP, 0, 5);
 }
 int main()
@@ -112,22 +128,15 @@ int main()
 	glFrontFace(GL_CCW);
 	// glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	fileloader(program[0],"shaders/mainv.glsl", "shaders/mainf.glsl");
-	fileloader(program[1],"shaders/lightv.glsl", "shaders/lightf.glsl");
-
-	vao[0] = getPoints("../resources/models/cube.txt", false);
-
-	loadTexture(tex[0],"../resources/imgs/earth.jpg");
-	objLoader(obj[Cube],"../resources/models/block.obj");
-	objLoader(obj[Sphere],"../resources/models/sphere.obj");
 	while (!glfwWindowShouldClose(window))
 	{
 		deltaTime = glfwGetTime() - lastframe;
 		lastframe = glfwGetTime();
 		keyCallbackLongTime(window);
-		updateUniform();
+		updateMatrix();
+		updateViewPort();
 		display();
 
 		glfwSwapBuffers(window);

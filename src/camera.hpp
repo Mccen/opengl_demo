@@ -1,5 +1,5 @@
 
-int width = 600, height=400;
+int width = 600, height = 400;
 bool mouseGet = true;
 bool keyFirst = true;
 glm::vec3 pos = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -15,7 +15,7 @@ GLfloat cameraX, cameraY, cameraZ;
 GLboolean mouse_is_first = true;
 GLdouble lastX = width / 2, lastY = height / 2;
 GLfloat Cyaw = -90.0f, Cpitch = 0.0f;
-GLfloat pov = 45.0f;
+GLfloat fov = 45.0f;
 GLfloat cubeX, cubeY, cubeZ;
 glm::mat4 model(1.0f), view(1.0f), projection(1.0f);
 
@@ -33,16 +33,21 @@ glm::mat4 viewMatrix()
 }
 glm::mat4 perMatrix()
 {
-	GLfloat aspect = GLfloat(width / height);
+	GLfloat aspect = static_cast<GLfloat>(width) / static_cast<GLfloat>(height);
 	GLfloat near = 0.1f;
 	GLfloat far = 100.0f;
-	projection = glm::perspective(glm::radians(pov*float(sqrt(aspect))), aspect, near, far);
+	std::cout << fov<< std::endl;
+	projection = glm::perspective(glm::radians(fov), aspect, near, far);
 	return projection;
 }
-void updateUniform()
+void updateMatrix()
 {
 	viewMatrix();
 	perMatrix();
+}
+void updateViewPort()
+{
+	glViewport(0, 0, width, height);
 }
 void mouseCallback(GLFWwindow *window, double xpos, double ypos)
 {
@@ -81,7 +86,6 @@ void reshapeCallback(GLFWwindow *window, int newwidth, int newheight) // 窗口�
 {
 	width = newwidth;
 	height = newheight;
-	glViewport(0, 0, width, height);
 }
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) // 按键按下时执行，适合快捷键操作
 {
@@ -112,7 +116,12 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 }
 void keyCallbackLongTime(GLFWwindow *window) // 持续监听键盘，适合连续进行的动作
 {
+
 	GLfloat speed = 2.5f * deltaTime;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	{
+		speed *= 4.0f;
+	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
@@ -148,13 +157,13 @@ void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
 }
 void scrollCallback(GLFWwindow *window, double xoffset, double yoffset) // 鼠标滚轮滚动时执行
 {
-	pov -= yoffset;
-	if (pov < 1.0f)
+	fov -= yoffset;
+	if (fov < 30.0f)
 	{
-		pov = 1.0f;
+		fov = 30.0f;
 	}
-	if (pov > 70.0f)
+	if (fov > 60.0f)
 	{
-		pov = 70.0f;
+		fov = 60.0f;
 	}
 }
