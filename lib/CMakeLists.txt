@@ -1,4 +1,3 @@
-# project(soil2 LANGUAGES CXX C VERSION 1.0.0)
 find_package(OpenGL REQUIRED)
 set_source_files_properties(*.c PROPERTIES LANGUAGE C)
 set_source_files_properties(*.cpp PROPERTIES LANGUAGE CXX)
