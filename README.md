@@ -10,4 +10,5 @@ mingw64 gcc 14.2.0
 `cd build ..`
 `cmake ..`
 `make`
-`./ouput/demo.exe`
+`make install`
+`../bin/demo.exe`

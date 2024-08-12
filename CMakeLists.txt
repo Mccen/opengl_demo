@@ -7,9 +7,7 @@ set(R ${CMAKE_SOURCE_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${R}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${R}/lib/output)
 file(GLOB_RECURSE RESOURCE_FILES "resources/**/*")
-install(FILES ${RESOURCE_FILES}
-        DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-)
+
 if (UNIX AND NOT APPLE) # 对于 Linux 和类 Unix 系统
     set(CMAKE_C_COMPILER "gcc")
     set(CMAKE_CXX_COMPILER "g++")
@@ -33,3 +31,6 @@ add_executable(demo ${SRC})
 target_link_libraries(demo soil2)
 target_link_libraries(demo glfw)
 target_link_libraries(demo glad)
+install(DIRECTORY resources/
+        DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources
+)
