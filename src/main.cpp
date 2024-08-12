@@ -47,12 +47,12 @@ void init(GLFWwindow *window)
 	cubeY = 0.0f;
 	cubeZ = -2.0f;
 	modelMatrix();
-	fileloader(program[lightProgram], "shaders/lightv.glsl", "shaders/lightf.glsl");
-	fileloader(program[mainProgram], "shaders/mainv.glsl", "shaders/mainf.glsl");
-	vao[0] = getPoints("../resources/models/cube.txt", false);
-	loadTexture(tex[0], "../resources/imgs/earth.jpg");
-	objLoader(obj[Cube], "../resources/models/block.obj");
-	objLoader(obj[Sphere], "../resources/models/sphere.obj");
+	fileloader(program[lightProgram], "resources/shaders/lightv.glsl", "resources/shaders/lightf.glsl");
+	fileloader(program[mainProgram], "resources/shaders/mainv.glsl", "resources/shaders/mainf.glsl");
+	vao[0] = getPoints("resources/models/cube.txt", false);
+	loadTexture(tex[0], "resources/imgs/earth.jpg");
+	objLoader(obj[Cube], "resources/models/block.obj");
+	objLoader(obj[Sphere], "resources/models/sphere.obj");
 	Light(light[0], glm::vec4(1.0f, 1.0f, 1.0f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(3.0f, 0.0f, 3.0f));
 	Material(material[0], glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 25.0f);
 	updateViewPort();
@@ -90,7 +90,6 @@ void display()
 	glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "model"), 1, GL_FALSE, glm::value_ptr(model));
 	glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "view"), 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	glUniform2fv(glGetUniformLocation(program[mainProgram], "screenSize"), 1, glm::value_ptr(glm::vec2(width, height)));
 	glDrawElements(GL_TRIANGLES, obj[Sphere].indices.size(), GL_UNSIGNED_INT, 0);
 
 	glDisable(GL_DEPTH_TEST);

@@ -31,7 +31,6 @@ uniform mat4 view; // 视图矩阵
 uniform mat4 projection; // 投影矩阵
 uniform Light light; // 光源数据
 uniform Material material; // 材质数据
-uniform vec2 screenSize; // 屏幕尺寸
 
 void main() {
     // 计算最终的顶点位置

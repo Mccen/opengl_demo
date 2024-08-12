@@ -36,7 +36,6 @@ glm::mat4 perMatrix()
 	GLfloat aspect = static_cast<GLfloat>(width) / static_cast<GLfloat>(height);
 	GLfloat near = 0.1f;
 	GLfloat far = 100.0f;
-	std::cout << fov<< std::endl;
 	projection = glm::perspective(glm::radians(fov), aspect, near, far);
 	return projection;
 }
