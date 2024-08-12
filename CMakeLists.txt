@@ -15,8 +15,8 @@ elseif (APPLE) # 对于 macOS
     set(CMAKE_C_COMPILER "clang")
     set(CMAKE_CXX_COMPILER "clang++")
 elseif (WIN32) # 对于 Windows
-    find_program(MINGW_GCC_EXECUTABLE gcc)
-    find_program(MINGW_GPP_EXECUTABLE g++)
+    find_program(MINGW_GCC_EXECUTABLE x86_64-w64-mingw32-gcc)
+    find_program(MINGW_GPP_EXECUTABLE x86_64-w64-mingw32-g++)
     if (MINGW_GCC_EXECUTABLE AND MINGW_GPP_EXECUTABLE)
         set(CMAKE_C_COMPILER "${MINGW_GCC_EXECUTABLE}")
         set(CMAKE_CXX_COMPILER "${MINGW_GPP_EXECUTABLE}")
