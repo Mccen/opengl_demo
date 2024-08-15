@@ -14,6 +14,7 @@
 #include "load.hpp"
 #include "light.hpp"
 #include "shadow.hpp"
+#include"world.hpp"
 
 #define VAOS 2
 static GLuint vao[VAOS];
