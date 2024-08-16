@@ -2,7 +2,7 @@
 int width = 600, height = 400;
 bool mouseGet = true;
 bool keyFirst = true;
-glm::vec3 pos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 pos = glm::vec3(0.0f, 2.0f, 3.0f);
 glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec3 CF = normalize(glm::vec3(target - pos));
@@ -11,23 +11,15 @@ glm::vec3 CU = cross(CR, CF);
 GLfloat angleStep = 0.1f;
 GLfloat deltaTime = 0.0f;
 GLfloat lastframe = 0.0f;
-GLfloat cameraX, cameraY, cameraZ;
 GLboolean mouse_is_first = true;
 GLdouble lastX = width / 2, lastY = height / 2;
 GLfloat Cyaw = -90.0f, Cpitch = 0.0f;
 GLfloat fov = 45.0f;
 GLfloat cubeX, cubeY, cubeZ;
-glm::mat4 model(1.0f), view(1.0f), projection(1.0f);
+glm::mat4 view(1.0f), projection(1.0f);
 
-glm::mat4 modelMatrix()
-{
-	model = translate(model, glm::vec3(cubeX, cubeY, cubeZ));
-	model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-	return model;
-}
 glm::mat4 viewMatrix()
 {
-
 	view = lookAt(pos, pos + CF, CU);
 	return view;
 }
@@ -46,7 +38,6 @@ void updateMatrix()
 }
 void updateViewPort()
 {
-	glViewport(0, 0, width, height);
 }
 void mouseCallback(GLFWwindow *window, double xpos, double ypos)
 {
@@ -85,6 +76,7 @@ void reshapeCallback(GLFWwindow *window, int newwidth, int newheight) // 窗口�
 {
 	width = newwidth;
 	height = newheight;
+	glViewport(0, 0, width, height);
 }
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) // 按键按下时执行，适合快捷键操作
 {
@@ -115,7 +107,6 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 }
 void keyCallbackLongTime(GLFWwindow *window) // 持续监听键盘，适合连续进行的动作
 {
-
 	GLfloat speed = 2.5f * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
@@ -146,6 +137,7 @@ void keyCallbackLongTime(GLFWwindow *window) // 持续监听键盘，适合连�
 	{
 		pos += speed * CU;
 	}
+	updateMatrix();
 }
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
 {
