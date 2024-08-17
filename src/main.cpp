@@ -43,9 +43,6 @@ enum
 };
 void init(GLFWwindow *window)
 {
-	cubeX = 0.0f;
-	cubeY = 0.0f;
-	cubeZ = -2.0f;
 #include "texList.txt"
 	fileloader(program[lightProgram], "./resources/shaders/lightv.vs", "./resources/shaders/lightf.fs");
 	fileloader(program[mainProgram], "./resources/shaders/mainv.vs", "./resources/shaders/mainf.fs");
@@ -80,26 +77,27 @@ void display()
 	glUniform1ui(glGetUniformLocation(program[lightProgram], "CC"), 2);
 	glDrawElements(GL_TRIANGLES, obj[Cube].indices.size(), GL_UNSIGNED_INT, 0);
 
-	glUseProgram(program[mainProgram]);
-	glBindVertexArray(obj[Sphere].VAO);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex[0]);
-	light->updateUniform(program[mainProgram]);
-	material->updateUniform(program[mainProgram]);
-	glUniform1i(glGetUniformLocation(program[mainProgram], "fTex"), 0);
-	glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "lmodel"), 1, GL_FALSE, glm::value_ptr(lmodel));
-	glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "view"), 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	// glUseProgram(program[mainProgram]);
+	// glBindVertexArray(obj[Sphere].VAO);
+	// glActiveTexture(GL_TEXTURE0);
+	// glBindTexture(GL_TEXTURE_2D, tex[0]);
+	// light->updateUniform(program[mainProgram]);
+	// material->updateUniform(program[mainProgram]);
+	// glUniform1i(glGetUniformLocation(program[mainProgram], "fTex"), 0);
+	// glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "lmodel"), 1, GL_FALSE, glm::value_ptr(lmodel));
+	// glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "view"), 1, GL_FALSE, glm::value_ptr(view));
+	// glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 	// glDrawElements(GL_TRIANGLES, obj[Sphere].indices.size(), GL_UNSIGNED_INT, 0);
 
 	glUseProgram(program[worldProgram]);
+	glBindVertexArray(worldVAO);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, tex[stone]);
 	glUniform1i(glGetUniformLocation(program[worldProgram], "fTex"), 1);
 	glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "lmodel"), 1, GL_FALSE, glm::value_ptr(lmodel));
 	glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "view"), 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	updateChunk(pos);
+	renderChunk();
 
 	glDisable(GL_DEPTH_TEST);
 	glUseProgram(program[worldProgram]);
@@ -137,6 +135,7 @@ int main()
 		deltaTime = glfwGetTime() - lastframe;
 		lastframe = glfwGetTime();
 		keyCallbackLongTime(window);
+		updateworldVAO(pos);
 		display();
 		glfwSwapBuffers(window);
 		glfwPollEvents();

@@ -15,7 +15,6 @@ GLboolean mouse_is_first = true;
 GLdouble lastX = width / 2, lastY = height / 2;
 GLfloat Cyaw = -90.0f, Cpitch = 0.0f;
 GLfloat fov = 45.0f;
-GLfloat cubeX, cubeY, cubeZ;
 glm::mat4 view(1.0f), projection(1.0f);
 
 glm::mat4 viewMatrix()
@@ -107,7 +106,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 }
 void keyCallbackLongTime(GLFWwindow *window) // 持续监听键盘，适合连续进行的动作
 {
-	GLfloat speed = 2.5f * deltaTime;
+	GLfloat speed = 3.5f * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
 		speed *= 4.0f;

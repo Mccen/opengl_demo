@@ -1,2 +1,2 @@
-loadTexture(tex[0], "./resources/imgs/earth.jpg");
-loadTexture(tex[1], "./resources/imgs/stone.jpg");
+loadTexture(tex[0], "./resources/imgs/earth.png");
+loadTexture(tex[1], "./resources/imgs/stone.png");

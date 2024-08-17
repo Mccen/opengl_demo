@@ -231,7 +231,7 @@ void loadTexture(GLuint &texture,const char *addr)
 	unsigned char *data = stbi_load(addr, &width, &height, &nrChannels, 0);
 	if (data)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		GLfloat anisoSetting = 0.0f;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &anisoSetting);

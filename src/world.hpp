@@ -1,4 +1,9 @@
-#include <unordered_set>
+#include <map>
+std::vector<float> allb_vertices;
+GLuint worldVAO, worldVBO;
+bool isInit = false;
+// 直线可视区块距离（不包括脚下的)
+int chunkNum = 3;
 enum type : unsigned int
 {
     stone = 1,
@@ -23,22 +28,163 @@ enum type : unsigned int
     obsidian,
     netherrack,
 };
+const float blockSize = 1.0f;
+const glm::vec3 normals[] = {
+    glm::vec3(0.0f, -1.0f, 0.0f), // 下
+    glm::vec3(0.0f, 1.0f, 0.0f),  // 上
+    glm::vec3(0.0f, 0.0f, 1.0f),  // 前
+    glm::vec3(0.0f, 0.0f, -1.0f), // 后
+    glm::vec3(-1.0f, 0.0f, 0.0f), // 左
+    glm::vec3(1.0f, 0.0f, 0.0f)   // 右
+};
+
+const float textureCoords[] = {
+    0.0f, 0.0f, // 下
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+
+    0.0f, 0.0f, // 上
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+
+    0.0f, 0.0f, // 前
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+
+    0.0f, 0.0f, // 后
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+
+    0.0f, 0.0f, // 左
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+
+    0.0f, 0.0f, // 右
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f};
+
 struct block
 {
     glm::vec3 b_position;
     type b_type;
-    block(glm::vec3 position, type type)
+    std::vector<GLfloat> b_vertices;
+    block(glm::vec3 blockPos, type type)
     {
-        b_position = position;
+        b_position = blockPos;
         b_type = type;
+        b_vertices.resize(36 * 8);
+
+        int vertexIndex = 0;
+        // 生成每个面的顶点
+        for (int face = 0; face < 6; ++face)
+        {
+            glm::vec3 v0, v1, v2, v3;
+            switch (face)
+            {
+            case 0: // 下
+                v0 = glm::vec3(blockPos.x, blockPos.y, blockPos.z);
+                v1 = glm::vec3(blockPos.x + blockSize, blockPos.y, blockPos.z);
+                v2 = glm::vec3(blockPos.x + blockSize, blockPos.y, blockPos.z + blockSize);
+                v3 = glm::vec3(blockPos.x, blockPos.y, blockPos.z + blockSize);
+                break;
+            case 1: // 上
+                v0 = glm::vec3(blockPos.x, blockPos.y + blockSize, blockPos.z);
+                v1 = glm::vec3(blockPos.x + blockSize, blockPos.y + blockSize, blockPos.z);
+                v2 = glm::vec3(blockPos.x + blockSize, blockPos.y + blockSize, blockPos.z + blockSize);
+                v3 = glm::vec3(blockPos.x, blockPos.y + blockSize, blockPos.z + blockSize);
+                break;
+            case 2: // 前
+                v0 = glm::vec3(blockPos.x, blockPos.y, blockPos.z);
+                v1 = glm::vec3(blockPos.x + blockSize, blockPos.y, blockPos.z);
+                v2 = glm::vec3(blockPos.x + blockSize, blockPos.y + blockSize, blockPos.z);
+                v3 = glm::vec3(blockPos.x, blockPos.y + blockSize, blockPos.z);
+                break;
+            case 3: // 后
+                v0 = glm::vec3(blockPos.x, blockPos.y, blockPos.z + blockSize);
+                v1 = glm::vec3(blockPos.x + blockSize, blockPos.y, blockPos.z + blockSize);
+                v2 = glm::vec3(blockPos.x + blockSize, blockPos.y + blockSize, blockPos.z + blockSize);
+                v3 = glm::vec3(blockPos.x, blockPos.y + blockSize, blockPos.z + blockSize);
+                break;
+            case 4: // 左
+                v0 = glm::vec3(blockPos.x, blockPos.y, blockPos.z);
+                v1 = glm::vec3(blockPos.x, blockPos.y, blockPos.z + blockSize);
+                v2 = glm::vec3(blockPos.x, blockPos.y + blockSize, blockPos.z + blockSize);
+                v3 = glm::vec3(blockPos.x, blockPos.y + blockSize, blockPos.z);
+                break;
+            case 5: // 右
+                v0 = glm::vec3(blockPos.x + blockSize, blockPos.y, blockPos.z);
+                v1 = glm::vec3(blockPos.x + blockSize, blockPos.y, blockPos.z + blockSize);
+                v2 = glm::vec3(blockPos.x + blockSize, blockPos.y + blockSize, blockPos.z + blockSize);
+                v3 = glm::vec3(blockPos.x + blockSize, blockPos.y + blockSize, blockPos.z);
+                break;
+            }
+            // 为当前面添加顶点数据
+            b_vertices[vertexIndex++] = v0.x;
+            b_vertices[vertexIndex++] = v0.y;
+            b_vertices[vertexIndex++] = v0.z;
+            b_vertices[vertexIndex++] = normals[face].x;
+            b_vertices[vertexIndex++] = normals[face].y;
+            b_vertices[vertexIndex++] = normals[face].z;
+            b_vertices[vertexIndex++] = textureCoords[face * 8];
+            b_vertices[vertexIndex++] = textureCoords[face * 8 + 1];
+
+            b_vertices[vertexIndex++] = v1.x;
+            b_vertices[vertexIndex++] = v1.y;
+            b_vertices[vertexIndex++] = v1.z;
+            b_vertices[vertexIndex++] = normals[face].x;
+            b_vertices[vertexIndex++] = normals[face].y;
+            b_vertices[vertexIndex++] = normals[face].z;
+            b_vertices[vertexIndex++] = textureCoords[face * 8 + 2];
+            b_vertices[vertexIndex++] = textureCoords[face * 8 + 3];
+
+            b_vertices[vertexIndex++] = v2.x;
+            b_vertices[vertexIndex++] = v2.y;
+            b_vertices[vertexIndex++] = v2.z;
+            b_vertices[vertexIndex++] = normals[face].x;
+            b_vertices[vertexIndex++] = normals[face].y;
+            b_vertices[vertexIndex++] = normals[face].z;
+            b_vertices[vertexIndex++] = textureCoords[face * 8 + 4];
+            b_vertices[vertexIndex++] = textureCoords[face * 8 + 5];
+
+            b_vertices[vertexIndex++] = v0.x;
+            b_vertices[vertexIndex++] = v0.y;
+            b_vertices[vertexIndex++] = v0.z;
+            b_vertices[vertexIndex++] = normals[face].x;
+            b_vertices[vertexIndex++] = normals[face].y;
+            b_vertices[vertexIndex++] = normals[face].z;
+            b_vertices[vertexIndex++] = textureCoords[face * 8];
+            b_vertices[vertexIndex++] = textureCoords[face * 8 + 1];
+
+            b_vertices[vertexIndex++] = v2.x;
+            b_vertices[vertexIndex++] = v2.y;
+            b_vertices[vertexIndex++] = v2.z;
+            b_vertices[vertexIndex++] = normals[face].x;
+            b_vertices[vertexIndex++] = normals[face].y;
+            b_vertices[vertexIndex++] = normals[face].z;
+            b_vertices[vertexIndex++] = textureCoords[face * 8 + 4];
+            b_vertices[vertexIndex++] = textureCoords[face * 8 + 5];
+
+            b_vertices[vertexIndex++] = v3.x;
+            b_vertices[vertexIndex++] = v3.y;
+            b_vertices[vertexIndex++] = v3.z;
+            b_vertices[vertexIndex++] = normals[face].x;
+            b_vertices[vertexIndex++] = normals[face].y;
+            b_vertices[vertexIndex++] = normals[face].z;
+            b_vertices[vertexIndex++] = textureCoords[face * 8 + 6];
+            b_vertices[vertexIndex++] = textureCoords[face * 8 + 7];
+        }
     }
 };
 struct chunk
 {
     // chunk的位置
     glm::vec2 c_position;
-    // 是否生成过
-    bool c_isGenerated = false;
     // 区块边长
     int c_size = 16;
     std::vector<block> c_blocks;
@@ -55,47 +201,37 @@ struct chunk
                 this->c_blocks.push_back(block(glm::vec3(x, 0, z), stone));
             }
         }
-        this->c_isGenerated = true;
     }
 };
-struct chunkHash // 哈希函数
-{
-    std::size_t operator()(const chunk &c) const
-    {
-        return std::hash<int>()(c.c_position.x) ^ std::hash<int>()(c.c_position.y);
-    }
-};
-struct chunkEqual // 哈希比较器
-{
-    bool operator()(const chunk &c1, const chunk &c2) const
-    {
-        return c1.c_position == c2.c_position;
-    }
-};
-chunk viewChunk;
-int chunkNum = 2;
 
+// 自定义重载<
+struct Vec2Compare
+{
+    bool operator()(const glm::vec2 &lhs, const glm::vec2 &rhs) const
+    {
+        if (lhs.x < rhs.x)
+            return true;
+        if (lhs.x == rhs.x && lhs.y < rhs.y)
+            return true;
+        return false;
+    }
+};
+//记录相机所在区块
+chunk viewChunk;
 // 创建chunk查找结构，留档已创建的区块
-std::unordered_set<chunk, chunkHash, chunkEqual> chunkHas;
+std::map<glm::vec2, chunk, Vec2Compare> chunkMap;
 // 储存的要使用的chunk
 std::vector<chunk> chunks;
 
 void getViewChunk(glm::vec3 viewPosition)
 {
     glm::vec2 chunkPosition;
-    chunkPosition.x = static_cast<int>(viewPosition.x / 16);
-    chunkPosition.y = static_cast<int>(viewPosition.z / 16);
+    chunkPosition.x = static_cast<int>(std::floor(viewPosition.x / 16.0f));
+    chunkPosition.y = static_cast<int>(std::floor(viewPosition.z / 16.0f));
     viewChunk.c_position = chunkPosition;
     std::cout << "viewChunk: " << viewChunk.c_position.x << " " << viewChunk.c_position.y << std::endl;
-    viewChunk.c_isGenerated = true;
 }
-bool hasChunk(chunk temp)
-{
-    if (chunkHas.find(temp) != chunkHas.end())
-        return true;
-    else
-        return false;
-}
+
 void loadChunk()
 {
     // chunkHas.clear();
@@ -104,207 +240,73 @@ void loadChunk()
     {
         for (int ii = viewChunk.c_position.y - chunkNum; ii <= viewChunk.c_position.y + chunkNum; ii++)
         {
+            if (i == viewChunk.c_position.x - chunkNum && ii == viewChunk.c_position.y - chunkNum)
+            {
+                continue;
+            }
+            if (i == viewChunk.c_position.x + chunkNum && ii == viewChunk.c_position.y - chunkNum)
+            {
+                continue;
+            }
+            if (i == viewChunk.c_position.x - chunkNum && ii == viewChunk.c_position.y + chunkNum)
+            {
+                continue;
+            }
+            if (i == viewChunk.c_position.x + chunkNum && ii == viewChunk.c_position.y + chunkNum)
+            {
+                continue;
+            }
             chunk tempChunk(glm::vec2(i, ii));
-
-            if (!hasChunk(tempChunk))
+            if (chunkMap.find(tempChunk.c_position) == chunkMap.end())
             {
                 tempChunk.createBlock();
-                chunkHas.insert(tempChunk);
-                chunks.push_back(tempChunk);
-                std::cout<<"new"<<std::endl;
+                chunkMap[tempChunk.c_position] = tempChunk;
+                chunks.push_back(chunkMap[tempChunk.c_position]);
+                std::cout << "new" << std::endl;
             }
             else
             {
-                chunks.push_back(*chunkHas.find(tempChunk));
-                //std::cout<<"finded"<<std::endl;
+                chunks.push_back(chunkMap[tempChunk.c_position]);
             }
         }
     }
 }
-// 生成单个方块的顶点数据
-std::vector<float> generateBlockVertices(const block &b)
-{
-    glm::vec3 position = b.b_position;
-    const float blockSize = 1.0f;
-    glm::vec3 blockPos = position;
-
-    std::vector<float> vertices(36 * 8); // 每个顶点有8个属性：3个位置坐标+2个纹理坐标+3个法线坐标
-
-    glm::vec3 normals[] = {
-        glm::vec3(0.0f, -1.0f, 0.0f), // 下
-        glm::vec3(0.0f, 1.0f, 0.0f),  // 上
-        glm::vec3(0.0f, 0.0f, 1.0f),  // 前
-        glm::vec3(0.0f, 0.0f, -1.0f), // 后
-        glm::vec3(-1.0f, 0.0f, 0.0f), // 左
-        glm::vec3(1.0f, 0.0f, 0.0f)   // 右
-    };
-
-    float textureCoords[] = {
-        0.0f, 0.0f, // 下
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-
-        0.0f, 0.0f, // 上
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-
-        0.0f, 0.0f, // 前
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-
-        0.0f, 0.0f, // 后
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-
-        0.0f, 0.0f, // 左
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-
-        0.0f, 0.0f, // 右
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f};
-
-    int vertexIndex = 0;
-
-    // 生成每个面的顶点
-    for (int face = 0; face < 6; ++face)
-    {
-        glm::vec3 v0, v1, v2, v3;
-        switch (face)
-        {
-        case 0: // 下
-            v0 = glm::vec3(blockPos.x, blockPos.y, blockPos.z);
-            v1 = glm::vec3(blockPos.x + blockSize, blockPos.y, blockPos.z);
-            v2 = glm::vec3(blockPos.x + blockSize, blockPos.y, blockPos.z + blockSize);
-            v3 = glm::vec3(blockPos.x, blockPos.y, blockPos.z + blockSize);
-            break;
-        case 1: // 上
-            v0 = glm::vec3(blockPos.x, blockPos.y + blockSize, blockPos.z);
-            v1 = glm::vec3(blockPos.x + blockSize, blockPos.y + blockSize, blockPos.z);
-            v2 = glm::vec3(blockPos.x + blockSize, blockPos.y + blockSize, blockPos.z + blockSize);
-            v3 = glm::vec3(blockPos.x, blockPos.y + blockSize, blockPos.z + blockSize);
-            break;
-        case 2: // 前
-            v0 = glm::vec3(blockPos.x, blockPos.y, blockPos.z);
-            v1 = glm::vec3(blockPos.x + blockSize, blockPos.y, blockPos.z);
-            v2 = glm::vec3(blockPos.x + blockSize, blockPos.y + blockSize, blockPos.z);
-            v3 = glm::vec3(blockPos.x, blockPos.y + blockSize, blockPos.z);
-            break;
-        case 3: // 后
-            v0 = glm::vec3(blockPos.x, blockPos.y, blockPos.z + blockSize);
-            v1 = glm::vec3(blockPos.x + blockSize, blockPos.y, blockPos.z + blockSize);
-            v2 = glm::vec3(blockPos.x + blockSize, blockPos.y + blockSize, blockPos.z + blockSize);
-            v3 = glm::vec3(blockPos.x, blockPos.y + blockSize, blockPos.z + blockSize);
-            break;
-        case 4: // 左
-            v0 = glm::vec3(blockPos.x, blockPos.y, blockPos.z);
-            v1 = glm::vec3(blockPos.x, blockPos.y, blockPos.z + blockSize);
-            v2 = glm::vec3(blockPos.x, blockPos.y + blockSize, blockPos.z + blockSize);
-            v3 = glm::vec3(blockPos.x, blockPos.y + blockSize, blockPos.z);
-            break;
-        case 5: // 右
-            v0 = glm::vec3(blockPos.x + blockSize, blockPos.y, blockPos.z);
-            v1 = glm::vec3(blockPos.x + blockSize, blockPos.y, blockPos.z + blockSize);
-            v2 = glm::vec3(blockPos.x + blockSize, blockPos.y + blockSize, blockPos.z + blockSize);
-            v3 = glm::vec3(blockPos.x + blockSize, blockPos.y + blockSize, blockPos.z);
-            break;
-        }
-
-        // 为当前面添加顶点数据
-        vertices[vertexIndex++] = v0.x;
-        vertices[vertexIndex++] = v0.y;
-        vertices[vertexIndex++] = v0.z;
-        vertices[vertexIndex++] = normals[face].x;
-        vertices[vertexIndex++] = normals[face].y;
-        vertices[vertexIndex++] = normals[face].z;
-        vertices[vertexIndex++] = textureCoords[face * 8];
-        vertices[vertexIndex++] = textureCoords[face * 8 + 1];
-
-        vertices[vertexIndex++] = v1.x;
-        vertices[vertexIndex++] = v1.y;
-        vertices[vertexIndex++] = v1.z;
-        vertices[vertexIndex++] = normals[face].x;
-        vertices[vertexIndex++] = normals[face].y;
-        vertices[vertexIndex++] = normals[face].z;
-        vertices[vertexIndex++] = textureCoords[face * 8 + 2];
-        vertices[vertexIndex++] = textureCoords[face * 8 + 3];
-
-        vertices[vertexIndex++] = v2.x;
-        vertices[vertexIndex++] = v2.y;
-        vertices[vertexIndex++] = v2.z;
-        vertices[vertexIndex++] = normals[face].x;
-        vertices[vertexIndex++] = normals[face].y;
-        vertices[vertexIndex++] = normals[face].z;
-        vertices[vertexIndex++] = textureCoords[face * 8 + 4];
-        vertices[vertexIndex++] = textureCoords[face * 8 + 5];
-
-        vertices[vertexIndex++] = v0.x;
-        vertices[vertexIndex++] = v0.y;
-        vertices[vertexIndex++] = v0.z;
-        vertices[vertexIndex++] = normals[face].x;
-        vertices[vertexIndex++] = normals[face].y;
-        vertices[vertexIndex++] = normals[face].z;
-        vertices[vertexIndex++] = textureCoords[face * 8];
-        vertices[vertexIndex++] = textureCoords[face * 8 + 1];
-
-        vertices[vertexIndex++] = v2.x;
-        vertices[vertexIndex++] = v2.y;
-        vertices[vertexIndex++] = v2.z;
-        vertices[vertexIndex++] = normals[face].x;
-        vertices[vertexIndex++] = normals[face].y;
-        vertices[vertexIndex++] = normals[face].z;
-        vertices[vertexIndex++] = textureCoords[face * 8 + 4];
-        vertices[vertexIndex++] = textureCoords[face * 8 + 5];
-
-        vertices[vertexIndex++] = v3.x;
-        vertices[vertexIndex++] = v3.y;
-        vertices[vertexIndex++] = v3.z;
-        vertices[vertexIndex++] = normals[face].x;
-        vertices[vertexIndex++] = normals[face].y;
-        vertices[vertexIndex++] = normals[face].z;
-        vertices[vertexIndex++] = textureCoords[face * 8 + 6];
-        vertices[vertexIndex++] = textureCoords[face * 8 + 7];
-    }
-
-    return vertices;
-}
 
 // 生成整个chunk的顶点数据
-std::vector<float> generateChunkVertices(const chunk &c)
+std::vector<float> chunkvertices;
+std::vector<float> generateChunkvertices(const chunk &c)
 {
-    std::vector<float> vertices;
+    chunkvertices.clear();
+    chunkvertices.reserve(c.c_blocks.size() * 36 * 8);
     for (const auto &block : c.c_blocks)
     {
-        std::vector<float> blockVertices = generateBlockVertices(block);
-        vertices.insert(vertices.end(), blockVertices.begin(), blockVertices.end());
+        chunkvertices.insert(chunkvertices.end(), block.b_vertices.begin(), block.b_vertices.end());
     }
-    return vertices;
+    return chunkvertices;
 }
 
-void updateChunk(glm::vec3 viewPosition)
+void updateworldVAO(glm::vec3 viewPosition)
 {
-    std::vector<float> allVertices;
-    GLuint VAO, VBO;
     getViewChunk(viewPosition);
     loadChunk();
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    if (!isInit)
+    {
+        glGenVertexArrays(1, &worldVAO);
+        glGenBuffers(1, &worldVBO);
+        glBindVertexArray(worldVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, worldVBO);
+        isInit = true;
+    }
+    glBindVertexArray(worldVAO);
     // 初始化顶点数据
+    allb_vertices.clear();
     for (const auto &c : chunks)
     {
-        std::vector<float> chunkVertices = generateChunkVertices(c);
-        allVertices.insert(allVertices.end(), chunkVertices.begin(), chunkVertices.end());
+        std::vector<float> chunkb_vertices = generateChunkvertices(c);
+        allb_vertices.insert(allb_vertices.end(), chunkb_vertices.begin(), chunkb_vertices.end());
     }
 
-    glBufferData(GL_ARRAY_BUFFER, allVertices.size() * sizeof(float), &allVertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, allb_vertices.size() * sizeof(float), &allb_vertices[0], GL_STATIC_DRAW);
     // 设置顶点属性指针
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
@@ -312,7 +314,9 @@ void updateChunk(glm::vec3 viewPosition)
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, allVertices.size() * sizeof(float));
-
+    glBindVertexArray(0);
+}
+void renderChunk()
+{
+    glDrawArrays(GL_TRIANGLES, 0, allb_vertices.size() * sizeof(float));
 }
