@@ -13,6 +13,7 @@ struct Light {
     vec3 diffuse; // 光源的漫反射颜色
     vec3 specular; // 光源的镜面反射颜色
     vec3 position; // 光源的位置
+    vec3 direction; // 光源的方向
 };
 
 in vec2 fTexCoord; // 传递自顶点着色器的纹理坐标
@@ -53,7 +54,7 @@ void main() {
     // 计算光源的环境光强度
     vec3 ambientL = light.ambient.rgb * light.ambient.a;
     // 计算材质的环境光强度
-    vec3 ambientM = material.ambient.rgb * light.ambient.a;
+    vec3 ambientM = material.ambient.rgb * material.ambient.a;
     // 计算最终的环境光强度
     vec3 ambient = ambientL*ambientM * texture(fTex, fTexCoord).rgb;
 

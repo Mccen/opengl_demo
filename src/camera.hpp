@@ -1,13 +1,12 @@
-
 int width = 600, height = 400;
 bool mouseGet = true;
 bool keyFirst = true;
-glm::vec3 pos = glm::vec3(0.0f, 2.0f, 3.0f);
-glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 pos = glm::vec3(0.0f, 2.0f, 2.0f);
+glm::vec3 target = glm::vec3(0.0f, 2.0f, 0.0f);
 glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec3 CF = normalize(glm::vec3(target - pos));
-glm::vec3 CR = normalize(cross(CF, worldUp));
-glm::vec3 CU = cross(CR, CF);
+glm::vec3 CF = glm::normalize(glm::vec3(target - pos));
+glm::vec3 CR = glm::normalize( glm::cross(CF, worldUp));
+glm::vec3 CU = glm::cross(CR, CF);
 GLfloat angleStep = 0.1f;
 GLfloat deltaTime = 0.0f;
 GLfloat lastframe = 0.0f;
@@ -19,7 +18,7 @@ glm::mat4 view(1.0f), projection(1.0f);
 
 glm::mat4 viewMatrix()
 {
-	view = lookAt(pos, pos + CF, CU);
+	view = glm::lookAt(pos, pos + CF, CU);
 	return view;
 }
 glm::mat4 perMatrix()
@@ -136,7 +135,9 @@ void keyCallbackLongTime(GLFWwindow *window) // 持续监听键盘，适合连�
 	{
 		pos += speed * CU;
 	}
+	std::cout<<CF.x<<" "<<CF.y<<" "<<CF.z<<std::endl;
 	updateMatrix();
+
 }
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods)
 {

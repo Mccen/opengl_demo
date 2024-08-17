@@ -14,6 +14,8 @@ struct Light {
     vec3 diffuse; // 光源的漫反射颜色
     vec3 specular; // 光源的镜面反射颜色
     vec3 position; // 光源的位置
+    vec3 direction; // 光源的方向
+
 };
 
 layout (location = 0) in vec3 vPos; // 顶点位置
@@ -34,9 +36,9 @@ uniform Material material; // 材质数据
 
 void main() {
     // 计算最终的顶点位置
-    gl_Position = projection * view * model * vec4(normalize(vPos), 1.0);
+    gl_Position = projection * view * model*vec4(normalize(vPos), 1.0);
     // 计算顶点在视图空间中的位置
-    viewVerPos = vec3(view * model * vec4(vPos, 1.0));
+    viewVerPos = vec3(view * model*vec4(vPos, 1.0));
     // 计算光源在视图空间中的位置
     viewLightPos = vec3(view * lmodel * vec4(light.position, 1.0));
     // 计算顶点在视图空间中的法线方向

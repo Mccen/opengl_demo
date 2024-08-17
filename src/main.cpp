@@ -16,7 +16,7 @@
 #include "world.hpp"
 #define VAOS 2
 static GLuint vao[VAOS];
-#define PROGRAMS 2
+#define PROGRAMS 3
 static GLuint program[PROGRAMS];
 #define OBJECTS 2
 static objLoader obj[OBJECTS];
@@ -46,29 +46,44 @@ void init(GLFWwindow *window)
 #include "texList.txt"
 	fileloader(program[lightProgram], "./resources/shaders/lightv.vs", "./resources/shaders/lightf.fs");
 	fileloader(program[mainProgram], "./resources/shaders/mainv.vs", "./resources/shaders/mainf.fs");
-	fileloader(program[worldProgram], "./resources/shaders/world.vs", "./resources/shaders/world.fs");
-	vao[0] = getPoints("./resources/models/cube.txt", false);
+	// fileloader(program[worldProgram], "./resources/shaders/world.vs", "./resources/shaders/world.fs");
+	fileloader(program[worldProgram], "./resources/shaders/worldLight.vs", "./resources/shaders/worldLight.fs");
 	objLoader(obj[Cube], "./resources/models/block.obj");
 	objLoader(obj[Sphere], "./resources/models/sphere.obj");
-	Light(light[0], glm::vec4(1.0f, 1.0f, 1.0f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(5.0f, 4.0f, 5.0f));
+	Light(light[0], glm::vec4(1.0f, 1.0f, 1.0f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(5.0f, 4.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	Material(material[0], glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 25.0f);
 	updateViewPort();
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
 	glfwGetFramebufferSize(window, &width, &height);
 }
+GLuint frames = 0;
+GLfloat elapsedTime = 0.0f;
 
+void fps(GLFWwindow *window)
+{
+	frames++;
+	elapsedTime += deltaTime;
+	if (elapsedTime >= 1.0f)
+	{
+		std::stringstream ss;
+		ss << "FPS: " << frames;
+		glfwSetWindowTitle(window, ss.str().c_str());
+		frames = 0;
+		elapsedTime = 0.0f;
+	}
+}
 void display()
 {
 	float currentTime = glfwGetTime();
 	glClearColor(0.3, 0.5, 0.4, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
 
 	glm::mat4 lmodel(1.0f);
 	lmodel = glm::rotate(lmodel, glm::radians(currentTime) * 30, glm::vec3(0.0f, 1.0f, 0.0f));
 	lmodel = glm::translate(lmodel, light[0].position);
 	lmodel = glm::scale(lmodel, glm::vec3(0.2f, 0.2f, 0.2f));
-	lmodel = lmodel;
 	glUseProgram(program[lightProgram]);
 	glBindVertexArray(obj[Cube].VAO);
 	glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "lmodel"), 1, GL_FALSE, value_ptr(lmodel));
@@ -84,29 +99,30 @@ void display()
 	// light->updateUniform(program[mainProgram]);
 	// material->updateUniform(program[mainProgram]);
 	// glUniform1i(glGetUniformLocation(program[mainProgram], "fTex"), 0);
+	// glm::mat4 smodel = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 4.0f, 0.0f));
 	// glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "lmodel"), 1, GL_FALSE, glm::value_ptr(lmodel));
+	// glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "model"), 1, GL_FALSE, glm::value_ptr(smodel));
 	// glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "view"), 1, GL_FALSE, glm::value_ptr(view));
 	// glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 	// glDrawElements(GL_TRIANGLES, obj[Sphere].indices.size(), GL_UNSIGNED_INT, 0);
 
+	// glUseProgram(program[worldProgram]);
 	glUseProgram(program[worldProgram]);
 	glBindVertexArray(worldVAO);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, tex[stone]);
 	glUniform1i(glGetUniformLocation(program[worldProgram], "fTex"), 1);
+	// glUniform1i(glGetUniformLocation(program[worldProgram], "fTex"), 1);
+	// glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "view"), 1, GL_FALSE, glm::value_ptr(view));
+	// glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	light->updateUniform(program[worldProgram]);
+	material->updateUniform(program[worldProgram]);
+	glm::mat4 smodel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "lmodel"), 1, GL_FALSE, glm::value_ptr(lmodel));
+	glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "model"), 1, GL_FALSE, glm::value_ptr(smodel));
 	glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "view"), 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 	renderChunk();
-
-	glDisable(GL_DEPTH_TEST);
-	glUseProgram(program[worldProgram]);
-	glBindVertexArray(vao[0]);
-	glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "view"), 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	glLineWidth(6);
-	glUniform1ui(glGetUniformLocation(program[lightProgram], "CC"), 0);
-	glDrawArrays(GL_LINE_STRIP, 0, 5);
 }
 int main()
 {
@@ -136,6 +152,7 @@ int main()
 		lastframe = glfwGetTime();
 		keyCallbackLongTime(window);
 		updateworldVAO(pos);
+		fps(window);
 		display();
 		glfwSwapBuffers(window);
 		glfwPollEvents();
