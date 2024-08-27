@@ -18,6 +18,6 @@ mingw64 gcc 14.2.0
 
 `make install`
 
-`cd ../bin`
+`cd ../output`
 
 `demo.exe`
