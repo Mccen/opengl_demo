@@ -46,12 +46,18 @@ void init(GLFWwindow *window)
 #include "texList.txt"
 	fileloader(program[lightProgram], "./resources/shaders/lightv.vs", "./resources/shaders/lightf.fs");
 	fileloader(program[mainProgram], "./resources/shaders/mainv.vs", "./resources/shaders/mainf.fs");
-	// fileloader(program[worldProgram], "./resources/shaders/world.vs", "./resources/shaders/world.fs");
 	fileloader(program[worldProgram], "./resources/shaders/worldLight.vs", "./resources/shaders/worldLight.fs");
 	objLoader(obj[Cube], "./resources/models/block.obj");
 	objLoader(obj[Sphere], "./resources/models/sphere.obj");
-	Light(light[0], glm::vec4(1.0f, 1.0f, 1.0f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(5.0f, 4.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	Material(material[0], glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 25.0f);
+	Light(light[0],
+	glm::vec4(1.0f, 1.0f, 1.0f, 0.2f),
+	 glm::vec3(1.0f, 1.0f, 1.0f),
+	 glm::vec3(1.0f, 1.0f, 1.0f),
+	 glm::vec3(5.0f, 4.0f, 5.0f),
+	 glm::vec3(0.0f, 0.0f, 0.0f),
+	 glm::vec3(0.1f, 0.09f, 0.005f)
+	 );
+	Material(material[0], glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f);
 	updateViewPort();
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);

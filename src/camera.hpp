@@ -1,8 +1,8 @@
 int width = 600, height = 400;
 bool mouseGet = true;
 bool keyFirst = true;
-glm::vec3 pos = glm::vec3(0.0f, 2.0f, 2.0f);
-glm::vec3 target = glm::vec3(0.0f, 2.0f, 0.0f);
+glm::vec3 pos = glm::vec3(0.1f, 2.0f, 2.0f);
+glm::vec3 target = glm::vec3(0.1f, 2.0f, 0.0f);
 glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec3 CF = glm::normalize(glm::vec3(target - pos));
 glm::vec3 CR = glm::normalize( glm::cross(CF, worldUp));
@@ -135,7 +135,6 @@ void keyCallbackLongTime(GLFWwindow *window) // 持续监听键盘，适合连�
 	{
 		pos += speed * CU;
 	}
-	std::cout<<CF.x<<" "<<CF.y<<" "<<CF.z<<std::endl;
 	updateMatrix();
 
 }
