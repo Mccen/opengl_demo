@@ -15,15 +15,38 @@ file(GLOB glfw  GLFW/glfw3.h
     glfw/null_init.c glfw/null_monitor.c glfw/null_window.c glfw/null_joystick.c)
 add_library(glfw STATIC  ${glfw})
 
-set(libos glfw/win32_time.h glfw/win32_thread.h
-    glfw/win32_module.c glfw/win32_time.c glfw/win32_thread.c)
+if (APPLE)
+    target_sources(glfw PRIVATE cocoa_time.h cocoa_time.c posix_thread.h
+                                posix_module.c posix_thread.c)
+                                target_compile_definitions(glfw PRIVATE _GLFW_COCOA)
+                                target_sources(glfw PRIVATE cocoa_platform.h cocoa_joystick.h cocoa_init.m
+                                                            cocoa_joystick.m cocoa_monitor.m cocoa_window.m
+                                                            nsgl_context.m)
+elseif (WIN32)
+    target_sources(glfw PRIVATE glfw/win32_time.h glfw/win32_thread.h glfw/win32_module.c
+    glfw/win32_time.c glfw/win32_thread.c)
+    target_compile_definitions(glfw PRIVATE _GLFW_WIN32)
+    target_sources(glfw PRIVATE glfw/win32_platform.h glfw/win32_joystick.h glfw/win32_init.c
+    glfw/win32_joystick.c glfw/win32_monitor.c glfw/win32_window.c
+    glfw/wgl_context.c)
+else()
+    target_sources(glfw PRIVATE glfw/posix_time.h glfw/posix_thread.h glfw/posix_module.c
+    glfw/posix_time.c glfw/posix_thread.c)
+    target_compile_definitions(glfw PRIVATE _GLFW_X11)
+    target_sources(glfw PRIVATE glfw/x11_platform.h glfw/xkb_unicode.h glfw/x11_init.c
+                                glfw/x11_monitor.c glfw/x11_window.c glfw/xkb_unicode.c
+                                glfw/glx_context.c)
+endif()
 
-target_sources(glfw PRIVATE ${libos})
-target_compile_definitions(glfw PRIVATE _GLFW_WIN32)
-target_sources(glfw PRIVATE glfw/win32_platform.h glfw/win32_joystick.h glfw/win32_init.c
-                                glfw/win32_joystick.c glfw/win32_monitor.c glfw/win32_window.c
-                                glfw/wgl_context.c)
 
+
+
+if (GLFW_BUILD_X11 OR GLFW_BUILD_WAYLAND)
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        target_sources(glfw PRIVATE linux_joystick.h linux_joystick.c)
+    endif()
+    target_sources(glfw PRIVATE glfw/posix_poll.h glfw/posix_poll.c)
+endif()
 
 # glad
 add_library(glad STATIC glad/glad.c)
