@@ -1,10 +1,13 @@
 find_package(OpenGL REQUIRED)
 set_source_files_properties(*.c PROPERTIES LANGUAGE C)
 set_source_files_properties(*.cpp PROPERTIES LANGUAGE CXX)
+
+
 # SOIL2
 file(GLOB soil SOIL2/*.c SOIL2/*.h SOIL2/*.cpp)
 add_library(soil2 STATIC  ${soil})
 target_link_libraries(soil2 PRIVATE OpenGL::GL)
+
 
 # glfw
 file(GLOB glfw  GLFW/glfw3.h
