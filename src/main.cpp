@@ -9,11 +9,13 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include"enum.hpp"
 #include "camera.hpp"
 #include "load.hpp"
 #include "light.hpp"
 #include "shadow.hpp"
 #include "world.hpp"
+
 #define VAOS 2
 static GLuint vao[VAOS];
 #define PROGRAMS 3
@@ -26,46 +28,19 @@ static Light light[LIGHTS];
 static Material material[MATERIALS];
 #define TEXTURES 2
 static GLuint tex[TEXTURES];
+GLuint frames = 0;
+GLfloat elapsedTime = 0.0f;
 
-// 使用枚举提高可读性
-// 模型
-enum
-{
-	Cube,
-	Sphere
-};
-// 着色器程序
-enum
-{
-	lightProgram,
-	mainProgram,
-	worldProgram
-};
+
 void init(GLFWwindow *window)
 {
-#include "texList.txt"
-	fileloader(program[lightProgram], "./resources/shaders/lightv.vs", "./resources/shaders/lightf.fs");
-	fileloader(program[mainProgram], "./resources/shaders/mainv.vs", "./resources/shaders/mainf.fs");
-	fileloader(program[worldProgram], "./resources/shaders/worldLight.vs", "./resources/shaders/worldLight.fs");
-	objLoader(obj[Cube], "./resources/models/block.obj");
-	objLoader(obj[Sphere], "./resources/models/sphere.obj");
-	Light(light[0],
-	glm::vec4(1.0f, 1.0f, 1.0f, 0.2f),
-	 glm::vec3(1.0f, 1.0f, 1.0f),
-	 glm::vec3(1.0f, 1.0f, 1.0f),
-	 glm::vec3(5.0f, 4.0f, 5.0f),
-	 glm::vec3(0.0f, 0.0f, 0.0f),
-	 glm::vec3(0.1f, 0.09f, 0.005f)
-	 );
-	Material(material[0], glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f);
+	#include "Lists.hpp"
 	updateViewPort();
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
 	glfwGetFramebufferSize(window, &width, &height);
 }
-GLuint frames = 0;
-GLfloat elapsedTime = 0.0f;
 
 void fps(GLFWwindow *window)
 {

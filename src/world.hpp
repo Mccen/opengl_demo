@@ -10,30 +10,7 @@ int perlinNoise(float x, float y)
     float noiseValue = sin(x)*3.0f+sin(y)*3.0f;
     return floor(noiseValue);
 }
-enum type : unsigned int
-{
-    stone = 1,
-    grass,
-    air,
-    dirt,
-    sand,
-    snow,
-    water,
-    lava,
-    leaves,
-    planks,
-    sapling,
-    cobblestone,
-    gravel,
-    gold,
-    iron,
-    diamond,
-    redstone,
-    lapis,
-    emerald,
-    obsidian,
-    netherrack,
-};
+
 const float blockSize = 1.0f;
 const glm::vec3 normals[] = {
     glm::vec3(0.0f, -1.0f, 0.0f), // 下

@@ -11,7 +11,7 @@ public:
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
 	objLoader(){}
-    objLoader(objLoader &obj,const char* addr) {
+    objLoader(const char* addr) {
         std::vector<GLfloat> tempVN, tempV, tempVT;
         std::vector<GLuint> tempVInd, tempVTInd, tempVNInd;
 
@@ -63,7 +63,6 @@ public:
 		tempVTInd.clear();
 		tempVNInd.clear();
 		tempVInd.clear();
-		obj = *this;
 	}
 
 private:
@@ -140,7 +139,7 @@ void errorGet(GLuint shader)
 	}
 }
 
-void fileloader(GLuint &program,const char *addrv, const char *addrf)
+GLuint fileloader(const char *addrv, const char *addrf)
 {
 	std::fstream filev(addrv, std::ios::in);
 	std::fstream filef(addrf, std::ios::in);
@@ -170,13 +169,13 @@ void fileloader(GLuint &program,const char *addrv, const char *addrf)
 	glShaderSource(fshader, 1, &fcode, NULL);
 	glCompileShader(fshader);
 	errorGet(fshader);
-	program = glCreateProgram();
+	GLuint program = glCreateProgram();
 	glAttachShader(program, vshader);
 	glAttachShader(program, fshader);
 	glLinkProgram(program);
 	glDeleteShader(vshader);
 	glDeleteShader(fshader);
-	//return program;
+	return program;
 }
 
 GLuint getPoints(const char *addr, bool enableEBO)
@@ -217,9 +216,9 @@ GLuint getPoints(const char *addr, bool enableEBO)
 	return VAO;
 }
 
-void loadTexture(GLuint &texture,const char *addr)
+GLuint loadTexture(const char *addr)
 {
-	//texture = glCreateTextures(GL_TEXTURE_2D);
+	GLuint texture = 0;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -243,5 +242,5 @@ void loadTexture(GLuint &texture,const char *addr)
 		exit(-1);
 	}
 	stbi_image_free(data);
-	//return texture;
+	return texture;
 }
