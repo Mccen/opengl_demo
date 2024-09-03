@@ -1,14 +1,30 @@
-## 使用cmake构建的opengl环境
+# 使用cmake构建的opengl环境
 
 ### 构建
 
-暂未进行windows之外的构建支持
+#### 特别说明：
+在linux下，glfw需要一些依赖才能编译，以下来自glfw官网：
 
-构建工具：
+On Debian and derivatives like Ubuntu and Linux Mint you will need the libwayland-dev and libxkbcommon-dev packages to compile for Wayland and the xorg-dev meta-package to compile for X11. These will pull in all other dependencies.
+
+`sudo apt install libwayland-dev libxkbcommon-dev xorg-dev`
+
+On Fedora and derivatives like Red Hat you will need the wayland-devel and libxkbcommon-devel packages to compile for Wayland and the libXcursor-devel, libXi-devel, libXinerama-devel and libXrandr-devel packages to compile for X11. These will pull in all other dependencies.
+
+`sudo dnf install wayland-devel libxkbcommon-devel libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel`
+
+On FreeBSD you will need the wayland, libxkbcommon and evdev-proto packages to compile for Wayland. The X11 headers are installed along the end-user X11 packages, so if you have an X server running you should have the headers as well. If not, install the xorgproto package to compile for X11.
+
+`pkg install wayland libxkbcommon evdev-proto xorgproto`
+
+On Cygwin Wayland is not supported but you will need the libXcursor-devel, libXi-devel, libXinerama-devel, libXrandr-devel and libXrender-devel packages to compile for X11. These can be found in the Libs section of the GUI installer and will pull in all other dependencies.
+
+#### 构建工具：
 
 cmake 3.10+
 
-mingw64 gcc
+mingw64 10.0+ (windows)
+g++ 9.0+ (linux)
 
 拉取仓库  `git clone https://github.com/Mccen/opengl_demo.git`
 
@@ -20,7 +36,9 @@ mingw64 gcc
 
 `cd build ..`
 
-`cmake  -G "MinGW Makefiles" ..`
+`cmake  -G "MinGW Makefiles" ..`（windos下）
+
+或 `cmake ..`
 
 `make`
 

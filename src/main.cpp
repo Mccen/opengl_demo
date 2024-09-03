@@ -98,29 +98,11 @@ void display()
 	glUniform1ui(glGetUniformLocation(program[lightProgram], "CC"), 2);
 	glDrawElements(GL_TRIANGLES, obj[Cube].indices.size(), GL_UNSIGNED_INT, 0);
 
-	// glUseProgram(program[mainProgram]);
-	// glBindVertexArray(obj[Sphere].VAO);
-	// glActiveTexture(GL_TEXTURE0);
-	// glBindTexture(GL_TEXTURE_2D, tex[0]);
-	// light->updateUniform(program[mainProgram]);
-	// material->updateUniform(program[mainProgram]);
-	// glUniform1i(glGetUniformLocation(program[mainProgram], "fTex"), 0);
-	// glm::mat4 smodel = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 4.0f, 0.0f));
-	// glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "lmodel"), 1, GL_FALSE, glm::value_ptr(lmodel));
-	// glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "model"), 1, GL_FALSE, glm::value_ptr(smodel));
-	// glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "view"), 1, GL_FALSE, glm::value_ptr(view));
-	// glUniformMatrix4fv(glGetUniformLocation(program[mainProgram], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	// glDrawElements(GL_TRIANGLES, obj[Sphere].indices.size(), GL_UNSIGNED_INT, 0);
-
-	// glUseProgram(program[worldProgram]);
 	glUseProgram(program[worldProgram]);
 	glBindVertexArray(worldVAO);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, tex[stone]);
 	glUniform1i(glGetUniformLocation(program[worldProgram], "fTex"), 1);
-	// glUniform1i(glGetUniformLocation(program[worldProgram], "fTex"), 1);
-	// glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "view"), 1, GL_FALSE, glm::value_ptr(view));
-	// glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 	light->updateUniform(program[worldProgram]);
 	material->updateUniform(program[worldProgram]);
 	glm::mat4 smodel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -134,7 +116,7 @@ int main()
 {
 	glfwInit();
 	glfwInitHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwInitHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwInitHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwInitHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWwindow *window = glfwCreateWindow(width, height, "demo", NULL, NULL);
 	glfwMakeContextCurrent(window);
