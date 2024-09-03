@@ -1,20 +1,19 @@
 cmake_minimum_required(VERSION 3.10)
 project(demo)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 set(CMAKE_EXPORT_COMPILECOMMANDS ON)
+cmake_policy(SET CMP0077 NEW)
+
 set(R ${CMAKE_SOURCE_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${R}/output)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${R}/lib/output)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${R}/libs/output)
 file(GLOB_RECURSE RESOURCE_FILES "resources/**/*")
 include_directories(${R}/include)
 add_subdirectory(src)
-add_subdirectory(lib)
+add_subdirectory(thirdparty)
 
-add_executable(demo ${SRC})
-target_link_libraries(demo soil2)
-target_link_libraries(demo glfw)
-target_link_libraries(demo glad)
 install(DIRECTORY resources/
         DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources
 )
