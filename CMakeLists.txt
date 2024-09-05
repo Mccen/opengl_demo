@@ -4,16 +4,15 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 set(CMAKE_EXPORT_COMPILECOMMANDS ON)
-cmake_policy(SET CMP0077 NEW)
 
 set(R ${CMAKE_SOURCE_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${R}/output)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${R}/libs/output)
-file(GLOB_RECURSE RESOURCE_FILES "resources/**/*")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${R}/libs)
 include_directories(${R}/include)
-add_subdirectory(src)
 add_subdirectory(thirdparty)
+add_subdirectory(src)
 
+file(GLOB_RECURSE RESOURCE_FILES "resources/**/*")
 install(DIRECTORY resources/
         DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources
 )

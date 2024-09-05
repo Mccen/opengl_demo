@@ -9,7 +9,7 @@
 #include <sstream>
 #include <fstream>
 #include <string>
-#include"enum.hpp"
+#include "enum.hpp"
 #include "camera.hpp"
 #include "load.hpp"
 #include "light.hpp"
@@ -31,10 +31,9 @@ static GLuint tex[TEXTURES];
 GLuint frames = 0;
 GLfloat elapsedTime = 0.0f;
 
-
 void init(GLFWwindow *window)
 {
-	#include "Lists.hpp"
+#include "Lists.hpp"
 	updateViewPort();
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
