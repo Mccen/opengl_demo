@@ -1,4 +1,4 @@
-#version 460
+#version 430
 // 材质属性结构体
 struct Material {
     vec4 ambient; // 材质的环境光颜色

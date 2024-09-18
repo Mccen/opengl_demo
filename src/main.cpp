@@ -18,6 +18,7 @@ static GLuint tex[TEXTURES];
 GLuint frames = 0;
 GLfloat elapsedTime = 0.0f;
 
+//单例camera
 Camera& camera = Camera::getCamera();
 
 void init(GLFWwindow *window) {
@@ -83,7 +84,7 @@ void display() {
 int main() {
   glfwInit();
   glfwInitHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwInitHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+  glfwInitHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwInitHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   GLFWwindow *window = glfwCreateWindow(camera.width, camera.height, "demo", NULL, NULL);
   glfwMakeContextCurrent(window);

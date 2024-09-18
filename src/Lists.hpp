@@ -1,3 +1,4 @@
+//
 tex[0] = loadTexture("./resources/imgs/earth.png");
 tex[stone] = loadTexture("./resources/imgs/stone.png");
 

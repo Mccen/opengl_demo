@@ -42,6 +42,5 @@ struct Camera {
   static void scrollCallback(GLFWwindow *window, double xoffset,
                       double yoffset); // 鼠标滚轮滚动时执行
 private:
-  Camera() {
-  }
+  Camera() {}
 };

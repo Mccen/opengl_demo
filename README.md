@@ -43,6 +43,7 @@ g++ 9.0+ (linux)
 `make`
 
 `make install`
+使用ninja可用`ninja install`
 
 `cd ../output`
 

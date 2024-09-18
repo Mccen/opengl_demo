@@ -1,4 +1,4 @@
-#version 460
+#version 430
 
 // 定义材质属性结构体
 struct Material {
