@@ -11,8 +11,3 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${R}/libs)
 include_directories(${R}/include)
 add_subdirectory(thirdparty)
 add_subdirectory(src)
-
-file(GLOB_RECURSE RESOURCE_FILES "resources/**/*")
-install(DIRECTORY resources/
-        DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources
-)
