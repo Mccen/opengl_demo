@@ -20,37 +20,34 @@ On FreeBSD you will need the wayland, libxkbcommon and evdev-proto packages to c
 On Cygwin Wayland is not supported but you will need the libXcursor-devel, libXi-devel, libXinerama-devel, libXrandr-devel and libXrender-devel packages to compile for X11. These can be found in the Libs section of the GUI installer and will pull in all other dependencies.
 
 #### 构建工具：
+cmake 3.10+<br>
+make/ninja<br>
+mingw64/gcc 10.0+（若使用vs直接打开文件夹即可）
 
-cmake 3.10+
+进入项目文件夹
 
-mingw64 10.0+ (windows)
-g++ 9.0+ (linux)
-
-拉取仓库  `git clone https://github.com/Mccen/opengl_demo.git`
-
-进入项目目录
-
-创建并进入构建目录
-
+创建构建文件夹：
 `mkdir build`
 
-`cd build ..`
+进入构建文件夹：
+`cd build`
 
-`cmake  -G "MinGW Makefiles" ..`（windos下）
+cmake构建（视目标平台和构建工具而定）：
+`cmake -G "MinGW Makefiles" ..`
 
-或 `cmake ..`
-
+make构建：
 `make`
 
+make 安装：
 `make install`
-使用ninja可用`ninja install`
 
-`cd ../output`
+进入可执行文件文件夹：
+`cd output`
 
-`demo.exe`
+运行：
+`./demo`
 
-
-### 操作说明
+# 操作说明
 1.使用wasd进行四向移动，使用space和c进行上下移动（相对于相机目视方向）
 
 2.移动鼠标控制相机视角，拨动滚轮改变视野范围
@@ -58,3 +55,5 @@ g++ 9.0+ (linux)
 3，按下esc可关闭窗口，按住左ctl+m可释放/锁定鼠标
 
 4.按住左shift可加快移动速度（注意输入法模式）
+
+### 本项目用到的第三方库如下

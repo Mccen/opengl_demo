@@ -1,11 +1,10 @@
-#version 430
+#version 330
 uniform sampler2D tex0;
 
 in vec3 color;
 in vec2 texCoord;
 out vec4 fin_color;
-
-uniform uint CC;
+uniform int CC;
 void main(void) {
 	if(CC == 1)
 		fin_color = texture(tex0, texCoord);

@@ -12,3 +12,6 @@ add_subdirectory(glfw)
 
 # glad
 add_library(glad STATIC glad/glad.c)
+
+# stb_image
+add_library(stb_image STATIC stb_image/stb_image.cpp)

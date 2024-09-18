@@ -59,7 +59,7 @@ void display() {
                      GL_FALSE, value_ptr(camera.view));
   glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "projection"),
                      1, GL_FALSE, value_ptr(camera.projection));
-  glUniform1ui(glGetUniformLocation(program[lightProgram], "CC"), 2);
+  glUniform1i(glGetUniformLocation(program[lightProgram], "CC"), 2);
   glDrawElements(GL_TRIANGLES, obj[Cube].indices.size(), GL_UNSIGNED_INT, 0);
 
   glUseProgram(program[worldProgram]);
@@ -83,7 +83,7 @@ void display() {
 }
 int main() {
   glfwInit();
-  glfwInitHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwInitHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwInitHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwInitHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   GLFWwindow *window = glfwCreateWindow(camera.width, camera.height, "demo", NULL, NULL);
