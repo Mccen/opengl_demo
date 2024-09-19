@@ -11,7 +11,18 @@ set(GLFW_INSTALL OFF)
 add_subdirectory(glfw)
 
 # glad
-add_library(glad STATIC glad/glad.c)
+include_directories(glad/include)
+add_library(glad STATIC glad/src/gl.c)
 
 # stb_image
-add_library(stb_image STATIC stb_image/stb_image.cpp)
+set(GENERATE_C "//启用stb_image\n#define STB_IMAGE_IMPLEMENTATION\n#include \"stb_image.h\"")
+file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/stb/stb_image.c" "${GENERATE_C}")
+add_library(stb STATIC stb/stb_image.c)
+
+# glm
+set(GLM_TEST OFF)
+set(GLM_BUILD_LIBRARY OFF)
+set(GLM_BUILD_INSTALL OFF)
+set(GLM_BUILD_LIBRARY OFF)
+set(GLM_ENABLE_CXX_17 ON)
+add_subdirectory(glm)

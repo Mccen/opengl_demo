@@ -18,8 +18,8 @@ static GLuint tex[TEXTURES];
 GLuint frames = 0;
 GLfloat elapsedTime = 0.0f;
 
-//单例camera
-Camera& camera = Camera::getCamera();
+// 单例camera
+Camera &camera = Camera::getCamera();
 
 void init(GLFWwindow *window) {
 #include "Lists.hpp"
@@ -86,11 +86,18 @@ int main() {
   glfwInitHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwInitHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwInitHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  GLFWwindow *window = glfwCreateWindow(camera.width, camera.height, "demo", NULL, NULL);
+  GLFWwindow *window =
+      glfwCreateWindow(camera.width, camera.height, "demo", NULL, NULL);
   glfwMakeContextCurrent(window);
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    exit(EXIT_FAILURE);
+  int version = gladLoadGL(glfwGetProcAddress);
+  if (version == 0) {
+    printf("Failed to initialize OpenGL context\n");
+    return -1;
   }
+
+  // Successfully loaded OpenGL
+  printf("Loaded OpenGL %d.%d\n", GLAD_VERSION_MAJOR(version),
+         GLAD_VERSION_MINOR(version));
   glfwSwapInterval(1);
   init(window);
   glfwSetWindowCloseCallback(window, camera.closeCallback);
