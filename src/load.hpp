@@ -1,6 +1,5 @@
-// #include <cstddef>
 #include "headerLists.hpp"
-
+#include<fstream>
 struct Vertex {
   GLfloat position[3];
   GLfloat normal[3];

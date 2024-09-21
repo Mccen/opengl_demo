@@ -1,4 +1,8 @@
 file(GLOB src *.cpp)
+include_directories(${PROJECT_SOURCE_DIR}/thirdparty/glfw/include)
+include_directories(${PROJECT_SOURCE_DIR}/thirdparty/glad/include)
+include_directories(${PROJECT_SOURCE_DIR}/thirdparty/glm)
+include_directories(${PROJECT_SOURCE_DIR}/thirdparty/stb)
 add_executable(demo ${src})
 
 target_link_libraries(demo glfw)

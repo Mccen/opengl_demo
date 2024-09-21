@@ -1,10 +1,8 @@
-// #include <cstddef>
 #include "load.hpp"
 objLoader::objLoader() {}
 objLoader::objLoader(const char *addr) {
   std::vector<GLfloat> tempVN, tempV, tempVT;
   std::vector<GLuint> tempVInd, tempVTInd, tempVNInd;
-
   std::ifstream file(addr);
   if (!file.is_open()) {
     std::cout << "\033[31mfile open error\033[m" << std::endl;

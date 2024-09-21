@@ -22,12 +22,20 @@ GLfloat elapsedTime = 0.0f;
 Camera &camera = Camera::getCamera();
 
 void init(GLFWwindow *window) {
+
 #include "Lists.hpp"
   camera.updateViewPort();
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
-
+  glfwSwapInterval(1);
   glfwGetFramebufferSize(window, &camera.width, &camera.height);
+  glfwSetWindowCloseCallback(window, camera.closeCallback);
+  glfwSetWindowSizeCallback(window, camera.reshapeCallback);
+  glfwSetCursorPosCallback(window, camera.mouseCallback);
+  glfwSetMouseButtonCallback(window, camera.mouseButtonCallback);
+  glfwSetScrollCallback(window, camera.scrollCallback);
+  glfwSetKeyCallback(window, camera.keyCallback);
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void fps(GLFWwindow *window) {
@@ -94,19 +102,10 @@ int main() {
     printf("Failed to initialize OpenGL context\n");
     return -1;
   }
-
   // Successfully loaded OpenGL
   printf("Loaded OpenGL %d.%d\n", GLAD_VERSION_MAJOR(version),
          GLAD_VERSION_MINOR(version));
-  glfwSwapInterval(1);
   init(window);
-  glfwSetWindowCloseCallback(window, camera.closeCallback);
-  glfwSetWindowSizeCallback(window, camera.reshapeCallback);
-  glfwSetCursorPosCallback(window, camera.mouseCallback);
-  glfwSetMouseButtonCallback(window, camera.mouseButtonCallback);
-  glfwSetScrollCallback(window, camera.scrollCallback);
-  glfwSetKeyCallback(window, camera.keyCallback);
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   while (!glfwWindowShouldClose(window)) {
     camera.deltaTime = glfwGetTime() - camera.lastframe;
