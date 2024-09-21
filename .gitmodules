@@ -9,3 +9,7 @@
 [submodule "thirdparty/stb"]
     path = thirdparty/stb
     url = https://github.com/nothings/stb.git
+
+[submodule "thirdparty/sdl"]
+    path = thirdparty/sdl
+    url = https://github.com/libsdl-org/SDL
