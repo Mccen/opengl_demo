@@ -21,7 +21,8 @@ GLfloat elapsedTime = 0.0f;
 // 单例camera
 Camera &camera = Camera::getCamera();
 
-void init(GLFWwindow *window) {
+void init(GLFWwindow *window)
+{
 
 #include "Lists.hpp"
   camera.updateViewPort();
@@ -29,7 +30,6 @@ void init(GLFWwindow *window) {
   glDepthFunc(GL_LESS);
   glfwSwapInterval(1);
   glfwGetFramebufferSize(window, &camera.width, &camera.height);
-  glfwSetWindowCloseCallback(window, camera.closeCallback);
   glfwSetWindowSizeCallback(window, camera.reshapeCallback);
   glfwSetCursorPosCallback(window, camera.mouseCallback);
   glfwSetMouseButtonCallback(window, camera.mouseButtonCallback);
@@ -38,10 +38,12 @@ void init(GLFWwindow *window) {
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-void fps(GLFWwindow *window) {
+void fps(GLFWwindow *window)
+{
   frames++;
   elapsedTime += camera.deltaTime;
-  if (elapsedTime >= 1.0f) {
+  if (elapsedTime >= 1.0f)
+  {
     std::stringstream ss;
     ss << "FPS: " << frames;
     glfwSetWindowTitle(window, ss.str().c_str());
@@ -49,7 +51,8 @@ void fps(GLFWwindow *window) {
     elapsedTime = 0.0f;
   }
 }
-void display() {
+void display()
+{
   float currentTime = glfwGetTime();
   glClearColor(0.3, 0.5, 0.4, 1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -89,7 +92,8 @@ void display() {
                      1, GL_FALSE, glm::value_ptr(camera.projection));
   renderChunk();
 }
-int main() {
+int main()
+{
   glfwInit();
   glfwInitHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwInitHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -98,7 +102,8 @@ int main() {
       glfwCreateWindow(camera.width, camera.height, "demo", NULL, NULL);
   glfwMakeContextCurrent(window);
   int version = gladLoadGL(glfwGetProcAddress);
-  if (version == 0) {
+  if (version == 0)
+  {
     printf("Failed to initialize OpenGL context\n");
     return -1;
   }
@@ -107,7 +112,8 @@ int main() {
          GLAD_VERSION_MINOR(version));
   init(window);
 
-  while (!glfwWindowShouldClose(window)) {
+  while (!glfwWindowShouldClose(window))
+  {
     camera.deltaTime = glfwGetTime() - camera.lastframe;
     camera.lastframe = glfwGetTime();
     camera.keyCallbackLongTime(window);

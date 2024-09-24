@@ -1,17 +1,16 @@
 #include "headerLists.hpp"
-#include <map>
-
-
 // Perlin噪声函数
 int perlinNoise(float x, float y);
 
-struct block {
+struct block
+{
   glm::vec3 b_position;
   type b_type;
   std::vector<GLfloat> b_vertices;
   block(glm::vec3 Pos, type type);
 };
-struct chunk {
+struct chunk
+{
   // chunk的位置
   glm::vec2 c_position;
   // 区块边长
@@ -24,8 +23,10 @@ struct chunk {
 };
 
 // 自定义重载<
-struct Vec2Compare {
-  bool operator()(const glm::vec2 &lhs, const glm::vec2 &rhs) const {
+struct Vec2Compare
+{
+  bool operator()(const glm::vec2 &lhs, const glm::vec2 &rhs) const
+  {
     if (lhs.x < rhs.x)
       return true;
     if (lhs.x == rhs.x && lhs.y < rhs.y)

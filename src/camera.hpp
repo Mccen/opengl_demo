@@ -1,5 +1,6 @@
 #include "headerLists.hpp"
-struct Camera {
+struct Camera
+{
   int width = 600, height = 400;
   bool mouseGet = true;
   bool keyFirst = true;
@@ -18,7 +19,8 @@ struct Camera {
   GLfloat fov = 45.0f;
   glm::mat4 view = glm::mat4(1.0f), projection = glm::mat4(1.0f);
   Camera(glm::vec3 pos, glm::vec3 target, glm::vec3 worldUp);
-  static Camera& getCamera() {
+  static Camera &getCamera()
+  {
     static Camera instance;
     return instance;
   }
@@ -30,17 +32,16 @@ struct Camera {
   void updateViewPort();
   static void mouseCallback(GLFWwindow *window, double xpos, double ypos);
 
-  static void closeCallback(GLFWwindow *window); // 窗口关闭时执行
   static void reshapeCallback(GLFWwindow *window, int newwidth,
-                       int newheight); // 窗口大小改变时执行
+                              int newheight); // 窗口大小改变时执行
   static void keyCallback(GLFWwindow *window, int key, int scancode, int action,
-                   int mods); // 按键按下时执行，适合快捷键操作
+                          int mods); // 按键按下时执行，适合快捷键操作
   void
   keyCallbackLongTime(GLFWwindow *window); // 持续监听键盘，适合连续进行的动作
   static void mouseButtonCallback(GLFWwindow *window, int button, int action,
-                           int mods);
+                                  int mods);
   static void scrollCallback(GLFWwindow *window, double xoffset,
-                      double yoffset); // 鼠标滚轮滚动时执行
+                             double yoffset); // 鼠标滚轮滚动时执行
 private:
   Camera() {}
 };

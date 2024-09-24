@@ -7,23 +7,24 @@ Camera::Camera(glm::vec3 pos, glm::vec3 target, glm::vec3 worldUp) {
   CR = glm::normalize(glm::cross(CF, worldUp));
   CU = glm::cross(CR, CF);
 }
-glm::mat4 Camera::viewMatrix() {
+glm::mat4 Camera::viewMatrix() {// 摄像机矩阵
   view = glm::lookAt(pos, pos + CF, CU);
   return view;
 }
-glm::mat4 Camera::perMatrix() {
+glm::mat4 Camera::perMatrix() {// 透视矩阵
   GLfloat aspect = static_cast<GLfloat>(width) / static_cast<GLfloat>(height);
   GLfloat near = 0.1f;
   GLfloat far = 100.0f;
   projection = glm::perspective(glm::radians(fov), aspect, near, far);
   return projection;
 }
-void Camera::updateMatrix() {
+void Camera::updateMatrix() {//更新矩阵
   viewMatrix();
   perMatrix();
 }
 void Camera::updateViewPort() {}
-void Camera::mouseCallback(GLFWwindow *window, double xpos, double ypos) {
+void Camera::mouseCallback(GLFWwindow *window, double xpos, double ypos) {//鼠标移动时执行
+
   if (getCamera().mouse_is_first) {
     getCamera().lastX = xpos;
     getCamera().lastY = ypos;
@@ -51,10 +52,6 @@ void Camera::mouseCallback(GLFWwindow *window, double xpos, double ypos) {
   getCamera().CU = glm::cross(getCamera().CR, getCamera().CF);
 }
 
-void Camera::closeCallback(GLFWwindow *window) // 窗口关闭时执行
-{
-  std::cout << "window close" << std::endl;
-}
 void Camera::reshapeCallback(GLFWwindow *window, int newwidth,
                              int newheight) // 窗口大小改变时执行
 {
@@ -116,7 +113,6 @@ void Camera::keyCallbackLongTime(
 void Camera::mouseButtonCallback(GLFWwindow *window, int button, int action,
                                  int mods) {
   if (button == GLFW_MOUSE_BUTTON_LEFT) {
-    getCamera().mouse_is_first = true;
   }
 }
 void Camera::scrollCallback(GLFWwindow *window, double xoffset,

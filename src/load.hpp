@@ -1,12 +1,13 @@
 #include "headerLists.hpp"
-#include<fstream>
-struct Vertex {
+struct Vertex
+{
   GLfloat position[3];
   GLfloat normal[3];
   GLfloat texCoord[2];
 };
 
-class objLoader {
+class objLoader
+{
 public:
   GLuint VAO, VBO, EBO;
   std::vector<Vertex> vertices;
@@ -24,7 +25,6 @@ private:
 };
 void errorGet(GLuint shader);
 
-GLuint fileloader(const char *addrv, const char *addrf);
-
-GLuint getPoints(const char *addr, bool enableEBO);
-GLuint loadTexture(const char *addr);
+GLuint fileloader(const char *addrv, const char *addrf); // 用于读取着色器代码
+GLuint getPoints(const char *addr, bool enableEBO);      // 用于读取简易的顶点数据
+GLuint loadTexture(const char *addr);                    // 用于读取纹理

@@ -1,4 +1,5 @@
 #include "load.hpp"
+#include <fstream>
 objLoader::objLoader() {}
 objLoader::objLoader(const char *addr) {
   std::vector<GLfloat> tempVN, tempV, tempVT;

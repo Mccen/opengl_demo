@@ -15,11 +15,10 @@ enum
 };
 
 //方块
-enum type : unsigned int
-{
-    stone = 1,
+enum type : unsigned int {
+    air = 0,
+    stone,
     grass,
-    air,
     dirt,
     sand,
     snow,
@@ -37,5 +36,5 @@ enum type : unsigned int
     lapis,
     emerald,
     obsidian,
-    netherrack,
+    netherrack
 };
