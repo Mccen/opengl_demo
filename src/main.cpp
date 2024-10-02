@@ -18,9 +18,9 @@ static GLuint tex[TEXTURES];
 GLuint frames = 0;
 GLfloat elapsedTime = 0.0f;
 
-// 单例camera
+// 单例
 Camera &camera = Camera::getCamera();
-
+World &world = World::getWorld();
 void init(GLFWwindow *window)
 {
 
@@ -73,24 +73,23 @@ void display()
   glUniform1i(glGetUniformLocation(program[lightProgram], "CC"), 2);
   glDrawElements(GL_TRIANGLES, obj[Cube].indices.size(), GL_UNSIGNED_INT, 0);
 
-  glUseProgram(program[worldProgram]);
-  glBindVertexArray(getworldVAO());
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, tex[stone]);
-  glUniform1i(glGetUniformLocation(program[worldProgram], "fTex"), 1);
-  light->updateUniform(program[worldProgram]);
-  material->updateUniform(program[worldProgram]);
-  glm::mat4 smodel =
-      glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-  glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "lmodel"), 1,
-                     GL_FALSE, glm::value_ptr(lmodel));
-  glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "model"), 1,
-                     GL_FALSE, glm::value_ptr(smodel));
-  glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "view"), 1,
-                     GL_FALSE, glm::value_ptr(camera.view));
-  glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "projection"),
-                     1, GL_FALSE, glm::value_ptr(camera.projection));
-  renderChunk();
+  // glUseProgram(program[worldProgram]);
+  // glBindVertexArray();
+  // glActiveTexture(GL_TEXTURE1);
+  // glBindTexture(GL_TEXTURE_2D, tex[stone]);
+  // glUniform1i(glGetUniformLocation(program[worldProgram], "fTex"), 1);
+  // light->updateUniform(program[worldProgram]);
+  // material->updateUniform(program[worldProgram]);
+  // glm::mat4 smodel =
+  //     glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+  // glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "lmodel"), 1,
+  //                    GL_FALSE, glm::value_ptr(lmodel));
+  // glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "model"), 1,
+  //                    GL_FALSE, glm::value_ptr(smodel));
+  // glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "view"), 1,
+  //                    GL_FALSE, glm::value_ptr(camera.view));
+  // glUniformMatrix4fv(glGetUniformLocation(program[worldProgram], "projection"),
+  //                    1, GL_FALSE, glm::value_ptr(camera.projection));
 }
 int main()
 {
@@ -107,17 +106,15 @@ int main()
     printf("Failed to initialize OpenGL context\n");
     return -1;
   }
-  // Successfully loaded OpenGL
   printf("Loaded OpenGL %d.%d\n", GLAD_VERSION_MAJOR(version),
          GLAD_VERSION_MINOR(version));
   init(window);
-
   while (!glfwWindowShouldClose(window))
   {
     camera.deltaTime = glfwGetTime() - camera.lastframe;
     camera.lastframe = glfwGetTime();
     camera.keyCallbackLongTime(window);
-    updateworldVAO(camera.pos);
+    world.updateCameraChunk(camera.pos);
     fps(window);
     display();
     glfwSwapBuffers(window);

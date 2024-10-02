@@ -1,324 +1,462 @@
 #include "world.hpp"
 #include "noise.hpp"
-#include "headerLists.hpp"
-#include <map>
+#include"thread"
+void block::GenerateBlockVertices(blockFaces *blockFaces)
+{
+    /*
+    面的次序为下上左右前后（相对于相机视角），每个面有6个点
+    0代表原点，1代表正方向，示例：000代表方块内位于0,0,0的点，这个位置的点也用来表示这个方块的位置
+    每个点有8个值，分别为x,y,z,uvx，uvy,normalx,normaly,normalz
+    */
+    // 下
+    // 顶点1 (001)
+    blockFaces->bottom[0] = this->b_position.x;
+    blockFaces->bottom[1] = this->b_position.y;
+    blockFaces->bottom[2] = this->b_position.z + 1.0f;
+    blockFaces->bottom[3] = 0.0f;  // u
+    blockFaces->bottom[4] = 0.0f;  // v
+    blockFaces->bottom[5] = 0.0f;  // nx
+    blockFaces->bottom[6] = -1.0f; // ny
+    blockFaces->bottom[7] = 0.0f;  // nz
 
-std::vector<float> allb_vertices; // 储存所有方块信息
-GLuint worldVAO, worldVBO;
-bool isInit = false;
-// 直线可视区块距离（不包括脚下的）
-int chunkNum = 1;
-const float blockSize = 1.0f;
-// 记录相机所在区块
-chunk viewChunk;
-// 创建chunk查找结构，留档已创建的区块
-std::map<glm::vec2, chunk, Vec2Compare> chunkMap;
-// 储存的要使用的chunk
-std::vector<chunk> chunks;
-// 生成整个chunk的顶点数据
-std::vector<float> chunkvertices;
-const glm::vec3 normals[] = {
-    glm::vec3(0.0f, -1.0f, 0.0f), // 下
-    glm::vec3(0.0f, 1.0f, 0.0f),  // 上
-    glm::vec3(0.0f, 0.0f, 1.0f),  // 前
-    glm::vec3(0.0f, 0.0f, -1.0f), // 后
-    glm::vec3(-1.0f, 0.0f, 0.0f), // 左
-    glm::vec3(1.0f, 0.0f, 0.0f)   // 右
-};
+    // 顶点2 (000)
+    blockFaces->bottom[8] = this->b_position.x;
+    blockFaces->bottom[9] = this->b_position.y;
+    blockFaces->bottom[10] = this->b_position.z;
+    blockFaces->bottom[11] = 0.0f;  // u
+    blockFaces->bottom[12] = 1.0f;  // v
+    blockFaces->bottom[13] = 0.0f;  // nx
+    blockFaces->bottom[14] = -1.0f; // ny
+    blockFaces->bottom[15] = 0.0f;  // nz
 
-const float textureCoords[] = {0.0f, 0.0f, // 下
-                               1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+    // 顶点3 (100)
+    blockFaces->bottom[16] = this->b_position.x + 1.0f;
+    blockFaces->bottom[17] = this->b_position.y;
+    blockFaces->bottom[18] = this->b_position.z;
+    blockFaces->bottom[19] = 1.0f;  // u
+    blockFaces->bottom[20] = 1.0f;  // v
+    blockFaces->bottom[21] = 0.0f;  // nx
+    blockFaces->bottom[22] = -1.0f; // ny
+    blockFaces->bottom[23] = 0.0f;  // nz
 
-                               0.0f, 0.0f, // 上
-                               1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+    // 顶点4 (101)
+    blockFaces->bottom[24] = this->b_position.x + 1.0f;
+    blockFaces->bottom[25] = this->b_position.y;
+    blockFaces->bottom[26] = this->b_position.z + 1.0f;
+    blockFaces->bottom[27] = 1.0f;  // u
+    blockFaces->bottom[28] = 0.0f;  // v
+    blockFaces->bottom[29] = 0.0f;  // nx
+    blockFaces->bottom[30] = -1.0f; // ny
+    blockFaces->bottom[31] = 0.0f;  // nz
 
-                               0.0f, 0.0f, // 前
-                               1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+    // 上
+    // 顶点1 (010)
+    blockFaces->top[0] = this->b_position.x;
+    blockFaces->top[1] = this->b_position.y + 1.0f;
+    blockFaces->top[2] = this->b_position.z;
+    blockFaces->top[3] = 0.0f; // u
+    blockFaces->top[4] = 0.0f; // v
+    blockFaces->top[5] = 0.0f; // nx
+    blockFaces->top[6] = 1.0f; // ny
+    blockFaces->top[7] = 0.0f; // nz
 
-                               0.0f, 0.0f, // 后
-                               1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+    // 顶点2 (011)
+    blockFaces->top[8] = this->b_position.x;
+    blockFaces->top[9] = this->b_position.y + 1.0f;
+    blockFaces->top[10] = this->b_position.z + 1.0f;
+    blockFaces->top[11] = 0.0f; // u
+    blockFaces->top[12] = 1.0f; // v
+    blockFaces->top[13] = 0.0f; // nx
+    blockFaces->top[14] = 1.0f; // ny
+    blockFaces->top[15] = 0.0f; // nz
 
-                               0.0f, 0.0f, // 左
-                               1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+    // 顶点3 (111)
+    blockFaces->top[16] = this->b_position.x + 1.0f;
+    blockFaces->top[17] = this->b_position.y + 1.0f;
+    blockFaces->top[18] = this->b_position.z + 1.0f;
+    blockFaces->top[19] = 1.0f; // u
+    blockFaces->top[20] = 1.0f; // v
+    blockFaces->top[21] = 0.0f; // nx
+    blockFaces->top[22] = 1.0f; // ny
+    blockFaces->top[23] = 0.0f; // nz
 
-                               0.0f, 0.0f, // 右
-                               1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f};
+    // 顶点4 (110)
+    blockFaces->top[24] = this->b_position.x + 1.0f;
+    blockFaces->top[25] = this->b_position.y + 1.0f;
+    blockFaces->top[26] = this->b_position.z;
+    blockFaces->top[27] = 1.0f; // u
+    blockFaces->top[28] = 0.0f; // v
+    blockFaces->top[29] = 0.0f; // nx
+    blockFaces->top[30] = 1.0f; // ny
+    blockFaces->top[31] = 0.0f; // nz
 
+    // 左
+    // 顶点1 (001)
+    blockFaces->left[0] = this->b_position.x;
+    blockFaces->left[1] = this->b_position.y;
+    blockFaces->left[2] = this->b_position.z + 1.0f;
+    blockFaces->left[3] = 0.0f;  // u
+    blockFaces->left[4] = 0.0f;  // v
+    blockFaces->left[5] = -1.0f; // nx
+    blockFaces->left[6] = 0.0f;  // ny
+    blockFaces->left[7] = 0.0f;  // nz
+
+    // 顶点2 (011)
+    blockFaces->left[8] = this->b_position.x;
+    blockFaces->left[9] = this->b_position.y + 1.0f;
+    blockFaces->left[10] = this->b_position.z + 1.0f;
+    blockFaces->left[11] = 0.0f;  // u
+    blockFaces->left[12] = 1.0f;  // v
+    blockFaces->left[13] = -1.0f; // nx
+    blockFaces->left[14] = 0.0f;  // ny
+    blockFaces->left[15] = 0.0f;  // nz
+
+    // 顶点3 (010)
+    blockFaces->left[16] = this->b_position.x;
+    blockFaces->left[17] = this->b_position.y + 1.0f;
+    blockFaces->left[18] = this->b_position.z;
+    blockFaces->left[19] = 1.0f;  // u
+    blockFaces->left[20] = 1.0f;  // v
+    blockFaces->left[21] = -1.0f; // nx
+    blockFaces->left[22] = 0.0f;  // ny
+    blockFaces->left[23] = 0.0f;  // nz
+
+    // 顶点4 (000)
+    blockFaces->left[24] = this->b_position.x;
+    blockFaces->left[25] = this->b_position.y;
+    blockFaces->left[26] = this->b_position.z;
+    blockFaces->left[27] = 1.0f;  // u
+    blockFaces->left[28] = 0.0f;  // v
+    blockFaces->left[29] = -1.0f; // nx
+    blockFaces->left[30] = 0.0f;  // ny
+    blockFaces->left[31] = 0.0f;  // nz
+
+    // 右
+    // 顶点1 (100)
+    blockFaces->right[0] = this->b_position.x + 1.0f; // X
+    blockFaces->right[1] = this->b_position.y;        // Y
+    blockFaces->right[2] = this->b_position.z;        // Z
+    blockFaces->right[3] = 0.0f;                      // U
+    blockFaces->right[4] = 0.0f;                      // V
+    blockFaces->right[5] = 1.0f;                      // Nx
+    blockFaces->right[6] = 0.0f;                      // Ny
+    blockFaces->right[7] = 0.0f;                      // Nz
+
+    // 顶点2 (110)
+    blockFaces->right[8] = this->b_position.x + 1.0f; // X
+    blockFaces->right[9] = this->b_position.y + 1.0f; // Y
+    blockFaces->right[10] = this->b_position.z;       // Z
+    blockFaces->right[11] = 0.0f;                     // U
+    blockFaces->right[12] = 1.0f;                     // V
+    blockFaces->right[13] = 1.0f;                     // Nx
+    blockFaces->right[14] = 0.0f;                     // Ny
+    blockFaces->right[15] = 0.0f;                     // Nz
+
+    // 顶点3 (111)
+    blockFaces->right[16] = this->b_position.x + 1.0f; // X
+    blockFaces->right[17] = this->b_position.y + 1.0f; // Y
+    blockFaces->right[18] = this->b_position.z + 1.0f; // Z
+    blockFaces->right[19] = 1.0f;                      // U
+    blockFaces->right[20] = 1.0f;                      // V
+    blockFaces->right[21] = 1.0f;                      // Nx
+    blockFaces->right[22] = 0.0f;                      // Ny
+    blockFaces->right[23] = 0.0f;                      // Nz
+
+    // 顶点4 (101)
+    blockFaces->right[24] = this->b_position.x + 1.0f; // X
+    blockFaces->right[25] = this->b_position.y;        // Y
+    blockFaces->right[26] = this->b_position.z + 1.0f; // Z
+    blockFaces->right[27] = 1.0f;                      // U
+    blockFaces->right[28] = 0.0f;                      // V
+    blockFaces->right[29] = 1.0f;                      // Nx
+    blockFaces->right[30] = 0.0f;                      // Ny
+    blockFaces->right[31] = 0.0f;                      // Nz
+
+    // 前
+    // 顶点1 (000)
+    blockFaces->front[0] = this->b_position.x; // X
+    blockFaces->front[1] = this->b_position.y; // Y
+    blockFaces->front[2] = this->b_position.z; // Z
+    blockFaces->front[3] = 0.0f;               // U
+    blockFaces->front[4] = 0.0f;               // V
+    blockFaces->front[5] = 0.0f;               // Nx
+    blockFaces->front[6] = 0.0f;               // Ny
+    blockFaces->front[7] = -1.0f;              // Nz
+
+    // 顶点2 (010)
+    blockFaces->front[8] = this->b_position.x;        // X
+    blockFaces->front[9] = this->b_position.y + 1.0f; // Y
+    blockFaces->front[10] = this->b_position.z;       // Z
+    blockFaces->front[11] = 0.0f;                     // U
+    blockFaces->front[12] = 1.0f;                     // V
+    blockFaces->front[13] = 0.0f;                     // Nx
+    blockFaces->front[14] = 0.0f;                     // Ny
+    blockFaces->front[15] = -1.0f;                    // Nz
+
+    // 顶点3 (110)
+    blockFaces->front[16] = this->b_position.x + 1.0f; // X
+    blockFaces->front[17] = this->b_position.y + 1.0f; // Y
+    blockFaces->front[18] = this->b_position.z;        // Z
+    blockFaces->front[19] = 1.0f;                      // U
+    blockFaces->front[20] = 1.0f;                      // V
+    blockFaces->front[21] = 0.0f;                      // Nx
+    blockFaces->front[22] = 0.0f;                      // Ny
+    blockFaces->front[23] = -1.0f;                     // Nz
+
+    // 顶点4 (100)
+    blockFaces->front[24] = this->b_position.x + 1.0f; // X
+    blockFaces->front[25] = this->b_position.y;        // Y
+    blockFaces->front[26] = this->b_position.z;        // Z
+    blockFaces->front[27] = 1.0f;                      // U
+    blockFaces->front[28] = 0.0f;                      // V
+    blockFaces->front[29] = 0.0f;                      // Nx
+    blockFaces->front[30] = 0.0f;                      // Ny
+    blockFaces->front[31] = -1.0f;                     // Nz
+
+    // 后
+    // 顶点1 (101)
+    blockFaces->back[0] = this->b_position.x + 1.0f; // X
+    blockFaces->back[1] = this->b_position.y;        // Y
+    blockFaces->back[2] = this->b_position.z + 1.0f; // Z
+    blockFaces->back[3] = 0.0f;                      // U
+    blockFaces->back[4] = 0.0f;                      // V
+    blockFaces->back[5] = 0.0f;                      // Nx
+    blockFaces->back[6] = 0.0f;                      // Ny
+    blockFaces->back[7] = 1.0f;                      // Nz
+
+    // 顶点2 (111)
+    blockFaces->back[8] = this->b_position.x + 1.0f;  // X
+    blockFaces->back[9] = this->b_position.y + 1.0f;  // Y
+    blockFaces->back[10] = this->b_position.z + 1.0f; // Z
+    blockFaces->back[11] = 0.0f;                      // U
+    blockFaces->back[12] = 1.0f;                      // V
+    blockFaces->back[13] = 0.0f;                      // Nx
+    blockFaces->back[14] = 0.0f;                      // Ny
+    blockFaces->back[15] = 1.0f;                      // Nz
+
+    // 顶点3 (011)
+    blockFaces->back[16] = this->b_position.x;        // X
+    blockFaces->back[17] = this->b_position.y + 1.0f; // Y
+    blockFaces->back[18] = this->b_position.z + 1.0f; // Z
+    blockFaces->back[19] = 1.0f;                      // U
+    blockFaces->back[20] = 1.0f;                      // V
+    blockFaces->back[21] = 0.0f;                      // Nx
+    blockFaces->back[22] = 0.0f;                      // Ny
+    blockFaces->back[23] = 1.0f;                      // Nz
+
+    // 顶点4 (001)
+    blockFaces->back[24] = this->b_position.x;        // X
+    blockFaces->back[25] = this->b_position.y;        // Y
+    blockFaces->back[26] = this->b_position.z + 1.0f; // Z
+    blockFaces->back[27] = 1.0f;                      // U
+    blockFaces->back[28] = 0.0f;                      // V
+    blockFaces->back[29] = 0.0f;                      // Nx
+    blockFaces->back[30] = 0.0f;                      // Ny
+    blockFaces->back[31] = 1.0f;                      // Nz
+}
 block::block(glm::vec3 Pos, type type)
 {
-  b_position = Pos;
-  b_type = type;
-  b_vertices.resize(36 * 8);
+    this->b_position = Pos;
+    this->b_type = type;
 }
-chunk::chunk() {}
-chunk::chunk(glm::vec2 position) : c_position(position)
-{
-  c_blocks.reserve(c_height * c_size * c_size * sizeof(block));
-}
+
 void chunk::createBlock()
 {
-  std::vector<block> temp_blocks;
-  Noise noise(this->c_position);
-  temp_blocks.reserve(c_height * c_size * c_size * sizeof(block));
-  for (int x = this->c_position.x * c_size;
-       x < (this->c_position.x + 1) * c_size; x++)
-  {
-    for (int z = this->c_position.y * c_size;
-         z < (this->c_position.y + 1) * c_size; z++)
+    glm::vec2 temp = glm::vec2(this->c_position.x * 16, this->c_position.y * 16);
+    int i = 0;
+    for (int x = temp.x; x < temp.x + 16; x++)
     {
-      temp_blocks.push_back(block(glm::vec3(x, noise.finNum[x][z], z), stone));
+        int j = 0;
+        for (int z = temp.y; z < temp.y + 16; z++)
+        {
+            Noise noise(glm::vec2(i, j), this->c_position);
+            for (int ii = 0; ii < this->c_height; ii++)
+            {
+                if (ii <= noise.finNum)
+                {
+                    block temp(glm::vec3(x, ii, z), stone);
+                    this->c_blocks[i][j][ii] = temp;
+                }
+                else
+                {
+                    block temp(glm::vec3(x, ii, z), air);
+                    this->c_blocks[i][j][ii] = temp;
+                }
+            }
+            j++;
+        }
+        i++;
     }
-  }
-  for (int x = this->c_position.x * c_size;
-       x < (this->c_position.x + 1) * c_size; x++)
-  {
-    for (int z = this->c_position.y * c_size;
-         z < (this->c_position.y + 1) * c_size; z++)
+    this->hasBlock = true;
+}
+chunk::chunk(glm::vec2 chunkposition)
+{
+    this->c_position = chunkposition;
+    if (!hasBlock)
+        createBlock();
+}
+
+void World::updateCameraChunk(glm::vec3 viewPosition)
+{
+    getWorld().cameraChunk.x = floor(viewPosition.x / 16);
+    getWorld().cameraChunk.y = floor(viewPosition.z / 16);
+    std::cout << "cameraChunk:" << getWorld().cameraChunk.x << " " << getWorld().cameraChunk.y << std::endl;
+}
+bool World::checkhasChunk(glm::ivec2 position)
+{
+    if (isFirst)
     {
-      block temp = block(glm::vec3(x, noise.finNum[x][z], z), stone);
-      int vertexIndex = 0;
-      // 定义邻居位置偏移
-      glm::vec3 neighborOffsets[6] = {
-          glm::vec3(0.0f, -1.0f, 0.0f), // 下
-          glm::vec3(0.0f, 1.0f, 0.0f),  // 上
-          glm::vec3(0.0f, 0.0f, -1.0f), // 前
-          glm::vec3(0.0f, 0.0f, 1.0f),  // 后
-          glm::vec3(-1.0f, 0.0f, 0.0f), // 左
-          glm::vec3(1.0f, 0.0f, 0.0f)   // 右
-      };
-
-      // 遍历每个面，检查是否需要剔除
-      for (int face = 0; face < 6; face++)
-      {
-        // 获取相邻方块位置
-        glm::vec3 neighborPos = temp.b_position + neighborOffsets[face];
-        bool hasNeighbor = false;
-        for (const auto &b : temp_blocks)
-        {
-          if (b.b_position == neighborPos && b.b_type != air)
-          {
-            hasNeighbor = true;
-            break;
-          }
-          else
-          {
-            hasNeighbor = false;
-          }
-        }
-        // 如果邻居存在且不是透明方块，剔除当前面
-        if (hasNeighbor)
-        {
-          continue; // 面被遮挡，不生成顶点
-        }
-        glm::vec3 v0, v1, v2, v3;
-        switch (face)
-        {
-        case 0: // 下
-          v0 = glm::vec3(temp.b_position.x, temp.b_position.y,
-                         temp.b_position.z);
-          v1 = glm::vec3(temp.b_position.x + blockSize, temp.b_position.y,
-                         temp.b_position.z);
-          v2 = glm::vec3(temp.b_position.x + blockSize, temp.b_position.y,
-                         temp.b_position.z + blockSize);
-          v3 = glm::vec3(temp.b_position.x, temp.b_position.y,
-                         temp.b_position.z + blockSize);
-          break;
-        case 1: // 上
-          v0 = glm::vec3(temp.b_position.x, temp.b_position.y + blockSize,
-                         temp.b_position.z);
-          v1 = glm::vec3(temp.b_position.x + blockSize,
-                         temp.b_position.y + blockSize, temp.b_position.z);
-          v2 = glm::vec3(temp.b_position.x + blockSize,
-                         temp.b_position.y + blockSize,
-                         temp.b_position.z + blockSize);
-          v3 = glm::vec3(temp.b_position.x, temp.b_position.y + blockSize,
-                         temp.b_position.z + blockSize);
-          break;
-        case 2: // 前
-          v0 = glm::vec3(temp.b_position.x, temp.b_position.y,
-                         temp.b_position.z);
-          v1 = glm::vec3(temp.b_position.x + blockSize, temp.b_position.y,
-                         temp.b_position.z);
-          v2 = glm::vec3(temp.b_position.x + blockSize,
-                         temp.b_position.y + blockSize, temp.b_position.z);
-          v3 = glm::vec3(temp.b_position.x, temp.b_position.y + blockSize,
-                         temp.b_position.z);
-          break;
-        case 3: // 后
-          v0 = glm::vec3(temp.b_position.x, temp.b_position.y,
-                         temp.b_position.z + blockSize);
-          v1 = glm::vec3(temp.b_position.x + blockSize, temp.b_position.y,
-                         temp.b_position.z + blockSize);
-          v2 = glm::vec3(temp.b_position.x + blockSize,
-                         temp.b_position.y + blockSize,
-                         temp.b_position.z + blockSize);
-          v3 = glm::vec3(temp.b_position.x, temp.b_position.y + blockSize,
-                         temp.b_position.z + blockSize);
-          break;
-        case 4: // 左
-          v0 = glm::vec3(temp.b_position.x, temp.b_position.y,
-                         temp.b_position.z);
-          v1 = glm::vec3(temp.b_position.x, temp.b_position.y,
-                         temp.b_position.z + blockSize);
-          v2 = glm::vec3(temp.b_position.x, temp.b_position.y + blockSize,
-                         temp.b_position.z + blockSize);
-          v3 = glm::vec3(temp.b_position.x, temp.b_position.y + blockSize,
-                         temp.b_position.z);
-          break;
-        case 5: // 右
-          v0 = glm::vec3(temp.b_position.x + blockSize, temp.b_position.y,
-                         temp.b_position.z);
-          v1 = glm::vec3(temp.b_position.x + blockSize, temp.b_position.y,
-                         temp.b_position.z + blockSize);
-          v2 = glm::vec3(temp.b_position.x + blockSize,
-                         temp.b_position.y + blockSize,
-                         temp.b_position.z + blockSize);
-          v3 = glm::vec3(temp.b_position.x + blockSize,
-                         temp.b_position.y + blockSize, temp.b_position.z);
-          break;
-        }
-        // 为当前面添加顶点数据
-        temp.b_vertices[vertexIndex++] = v0.x;
-        temp.b_vertices[vertexIndex++] = v0.y;
-        temp.b_vertices[vertexIndex++] = v0.z;
-        temp.b_vertices[vertexIndex++] = normals[face].x;
-        temp.b_vertices[vertexIndex++] = normals[face].y;
-        temp.b_vertices[vertexIndex++] = normals[face].z;
-        temp.b_vertices[vertexIndex++] = textureCoords[face * 8];
-        temp.b_vertices[vertexIndex++] = textureCoords[face * 8 + 1];
-
-        temp.b_vertices[vertexIndex++] = v1.x;
-        temp.b_vertices[vertexIndex++] = v1.y;
-        temp.b_vertices[vertexIndex++] = v1.z;
-        temp.b_vertices[vertexIndex++] = normals[face].x;
-        temp.b_vertices[vertexIndex++] = normals[face].y;
-        temp.b_vertices[vertexIndex++] = normals[face].z;
-        temp.b_vertices[vertexIndex++] = textureCoords[face * 8 + 2];
-        temp.b_vertices[vertexIndex++] = textureCoords[face * 8 + 3];
-
-        temp.b_vertices[vertexIndex++] = v2.x;
-        temp.b_vertices[vertexIndex++] = v2.y;
-        temp.b_vertices[vertexIndex++] = v2.z;
-        temp.b_vertices[vertexIndex++] = normals[face].x;
-        temp.b_vertices[vertexIndex++] = normals[face].y;
-        temp.b_vertices[vertexIndex++] = normals[face].z;
-        temp.b_vertices[vertexIndex++] = textureCoords[face * 8 + 4];
-        temp.b_vertices[vertexIndex++] = textureCoords[face * 8 + 5];
-
-        temp.b_vertices[vertexIndex++] = v0.x;
-        temp.b_vertices[vertexIndex++] = v0.y;
-        temp.b_vertices[vertexIndex++] = v0.z;
-        temp.b_vertices[vertexIndex++] = normals[face].x;
-        temp.b_vertices[vertexIndex++] = normals[face].y;
-        temp.b_vertices[vertexIndex++] = normals[face].z;
-        temp.b_vertices[vertexIndex++] = textureCoords[face * 8];
-        temp.b_vertices[vertexIndex++] = textureCoords[face * 8 + 1];
-
-        temp.b_vertices[vertexIndex++] = v2.x;
-        temp.b_vertices[vertexIndex++] = v2.y;
-        temp.b_vertices[vertexIndex++] = v2.z;
-        temp.b_vertices[vertexIndex++] = normals[face].x;
-        temp.b_vertices[vertexIndex++] = normals[face].y;
-        temp.b_vertices[vertexIndex++] = normals[face].z;
-        temp.b_vertices[vertexIndex++] = textureCoords[face * 8 + 4];
-        temp.b_vertices[vertexIndex++] = textureCoords[face * 8 + 5];
-
-        temp.b_vertices[vertexIndex++] = v3.x;
-        temp.b_vertices[vertexIndex++] = v3.y;
-        temp.b_vertices[vertexIndex++] = v3.z;
-        temp.b_vertices[vertexIndex++] = normals[face].x;
-        temp.b_vertices[vertexIndex++] = normals[face].y;
-        temp.b_vertices[vertexIndex++] = normals[face].z;
-        temp.b_vertices[vertexIndex++] = textureCoords[face * 8 + 6];
-        temp.b_vertices[vertexIndex++] = textureCoords[face * 8 + 7];
-      }
-      c_blocks.push_back(temp);
+        return false;
     }
-  }
-  temp_blocks.clear();
+    return this->memoryChunks[position.x][position.y].hasBlock;
 }
-
-void getViewChunk(glm::vec3 viewPosition)
+glm::ivec2 World::changeCoordToIndex(glm::vec2 position)
 {
-  glm::vec2 chunkPosition;
-  chunkPosition.x = static_cast<int>(std::floor(viewPosition.x / 16.0f));
-  chunkPosition.y = static_cast<int>(std::floor(viewPosition.z / 16.0f));
-  viewChunk.c_position = chunkPosition;
-}
-
-void loadChunk()
-{
-  chunks.clear();
-  for (int i = viewChunk.c_position.x - chunkNum;
-       i <= viewChunk.c_position.x + chunkNum; i++)
-  {
-    for (int ii = viewChunk.c_position.y - chunkNum;
-         ii <= viewChunk.c_position.y + chunkNum; ii++)
+    glm::vec2 tempIndex;
+    if (position.x <= 0)
     {
-      chunk tempChunk(glm::vec2(i, ii));
-      if (chunkMap.find(tempChunk.c_position) == chunkMap.end())
-      {
-        tempChunk.createBlock();
-        chunkMap[tempChunk.c_position] = tempChunk;
-        chunks.push_back(chunkMap[tempChunk.c_position]);
-      }
-      else
-      {
-        chunks.push_back(chunkMap[tempChunk.c_position]);
-      }
+        if (position.y <= 0)
+        {
+            tempIndex.x = 2 * abs(position.x);
+            tempIndex.y = 2 * abs(position.y);
+        }
+        else
+        {
+            tempIndex.x = 2 * abs(position.x);
+            tempIndex.y = 2 * abs(position.y) - 1;
+        }
     }
-  }
+    else
+    {
+        if (position.y <= 0)
+        {
+            tempIndex.x = 2 * abs(position.x) - 1;
+            tempIndex.y = 2 * abs(position.y);
+        }
+        else
+        {
+            tempIndex.x = 2 * abs(position.x) - 1;
+            tempIndex.y = 2 * abs(position.y) - 1;
+        }
+    }
+    std::cout<<"pos:"<<position.x<<" "<<position.y<<"    "<<"index:"<<tempIndex.x<<" "<<tempIndex.y<<std::endl;
+    return tempIndex;
+}
+void World::createChunk(glm::ivec2 position)
+{
+    if (checkhasChunk(changeCoordToIndex(position)))
+        ;
 }
 
-std::vector<float> generateChunkvertices(const chunk &c)
-{
-  chunkvertices.reserve(c.c_blocks.size());
-  chunkvertices.clear();
-  for (const auto &block : c.c_blocks)
-  {
-    chunkvertices.insert(chunkvertices.end(), block.b_vertices.begin(),
-                         block.b_vertices.end());
-  }
-  return chunkvertices;
-}
+// void World::makeVAO()
+// {
+//     int n = 0;
+//     for (int x = (cameraChunk.x - viewDistance); x < (cameraChunk.x + viewDistance); x++)
+//     {
+//         for (int z = (cameraChunk.y - viewDistance); z < (cameraChunk.y + viewDistance); z++)
+//         {
+//             for (int i = 1; i < 16; i++)
+//             {
+//                 for (int ii = 1; ii < 16; ii++)
+//                 {
+//                     for (int iii = 1; iii < 128; iii++)
+//                     {
+//                         blockFaces temp;
+//                         this->chunks[x][z].c_blocks[i][ii][iii].GenerateBlockVertices(&temp);
+//                         if (this->chunks[x][z].c_blocks[i][ii][iii].b_type != air && this->chunks[x][z].c_blocks[i - 1][ii][iii].b_type == air)
+//                         {
+//                             for (int ind = n; ind < 32; ind++)
+//                             {
+//                                 vertices[ind] = temp.left[ind];
+//                             }
+//                             n += 32;
+//                         }
+//                         if (this->chunks[x][z].c_blocks[i][ii][iii].b_type != air && this->chunks[x][z].c_blocks[i + 1][ii][iii].b_type == air)
+//                         {
+//                             for (int ind = n; ind < 32; ind++)
+//                             {
+//                                 vertices[ind] = temp.right[ind];
+//                             }
+//                             n += 32;
+//                         }
+//                         if (this->chunks[x][z].c_blocks[i][ii][iii].b_type != air && this->chunks[x][z].c_blocks[i][ii - 1][iii].b_type == air)
+//                         {
+//                             for (int ind = n; ind < 32; ind++)
+//                             {
+//                                 vertices[ind] = temp.front[ind];
+//                             }
+//                             n += 32;
+//                         }
+//                         if (this->chunks[x][z].c_blocks[i][ii][iii].b_type != air && this->chunks[x][z].c_blocks[i][ii + 1][iii].b_type == air)
+//                         {
+//                             for (int ind = n; ind < 32; ind++)
+//                             {
+//                                 vertices[ind] = temp.back[ind];
+//                             }
+//                             n += 32;
+//                         }
+//                         if (this->chunks[x][z].c_blocks[i][ii][iii].b_type != air && this->chunks[x][z].c_blocks[i][ii][iii + 1].b_type == air)
+//                         {
+//                             for (int ind = n; ind < 32; ind++)
+//                             {
+//                                 vertices[ind] = temp.top[ind];
+//                             }
+//                             n += 32;
+//                         }
+//                         if (this->chunks[x][z].c_blocks[i][ii][iii].b_type != air && this->chunks[x][z].c_blocks[i][ii][iii - 1].b_type == air)
+//                         {
+//                             for (int ind = n; ind < 32; ind++)
+//                             {
+//                                 vertices[ind] = temp.bottom[ind];
+//                             }
+//                             n += 32;
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//     GLuint worldVBO;
+//     glGenVertexArrays(1, &worldVAO);
+//     glBindVertexArray(worldVAO);
+//     glGenBuffers(1, &worldVBO);
+//     glBindBuffer(GL_ARRAY_BUFFER, worldVBO);
+//     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+//     glEnableVertexAttribArray(0);
+//     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+//     glEnableVertexAttribArray(1);
+//     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+//     glEnableVertexAttribArray(2);
+//     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+// }
 
-void updateworldVAO(glm::vec3 viewPosition)
+void World::renderChunk()
 {
-  getViewChunk(viewPosition);
-  loadChunk();
-  if (!isInit)
-  {
-    glGenVertexArrays(1, &worldVAO);
-    glGenBuffers(1, &worldVBO);
     glBindVertexArray(worldVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, worldVBO);
-    isInit = true;
-  }
-  glBindVertexArray(worldVAO);
-  // 初始化顶点数据
-  allb_vertices.clear();
-  for (const auto &c : chunks)
-  {
-    std::vector<float> chunkb_vertices = generateChunkvertices(c);
-    allb_vertices.insert(allb_vertices.end(), chunkb_vertices.begin(),
-                         chunkb_vertices.end());
-  }
-
-  glBufferData(GL_ARRAY_BUFFER, allb_vertices.size() * sizeof(float),
-               &allb_vertices[0], GL_STATIC_DRAW);
-  // 设置顶点属性指针
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                        (void *)(3 * sizeof(float)));
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                        (void *)(6 * sizeof(float)));
-  glEnableVertexAttribArray(2);
-  glBindVertexArray(0);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
-void renderChunk()
+void World::loadViewChunk()
 {
-  glDrawArrays(GL_TRIANGLES, 0, allb_vertices.size() * sizeof(float));
+    for (int x = (cameraChunk.x - viewDistance); x < (cameraChunk.x + viewDistance); x++)
+    {
+        for (int z = (cameraChunk.y - viewDistance); z < (cameraChunk.y + viewDistance); z++)
+        {
+            createChunk(glm::ivec2(x, z));
+            std::cout << "chunk" << x << " " << z << std::endl;
+            this->viewChunks[x * (viewDistance * 2 + 1) + z] = this->memoryChunks[x][z];
+        }
+    }
+    this->isFirst = false;
 }
-GLuint getworldVAO() { return worldVAO; }
+void World::saveChunk()
+{
+    if (this->changeCoordToIndex(cameraChunk).x>=memorySize-8||this->changeCoordToIndex(cameraChunk).y>=memorySize-8)
+    {
+
+    }
+
+}
+World::World()
+{
+    loadViewChunk();
+}

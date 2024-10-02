@@ -1,3 +1,5 @@
+#ifndef CAMERA_HPP
+#define CAMERA_HPP
 #include "headerLists.hpp"
 struct Camera
 {
@@ -45,3 +47,4 @@ struct Camera
 private:
   Camera() {}
 };
+#endif

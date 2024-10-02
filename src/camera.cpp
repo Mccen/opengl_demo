@@ -89,7 +89,6 @@ void Camera::keyCallbackLongTime(
   if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
     speed *= 4.0f;
   }
-
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
     pos += speed * CF;
   }

@@ -1,3 +1,5 @@
+#ifndef LOAD_HPP
+#define LOAD_HPP
 #include "headerLists.hpp"
 struct Vertex
 {
@@ -6,7 +8,7 @@ struct Vertex
   GLfloat texCoord[2];
 };
 
-class objLoader
+struct objLoader
 {
 public:
   GLuint VAO, VBO, EBO;
@@ -28,3 +30,6 @@ void errorGet(GLuint shader);
 GLuint fileloader(const char *addrv, const char *addrf); // 用于读取着色器代码
 GLuint getPoints(const char *addr, bool enableEBO);      // 用于读取简易的顶点数据
 GLuint loadTexture(const char *addr);                    // 用于读取纹理
+
+
+#endif
