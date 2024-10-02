@@ -98,7 +98,7 @@ int main()
   glfwInitHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwInitHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   GLFWwindow *window =
-      glfwCreateWindow(camera.width, camera.height, "demo", NULL, NULL);
+  glfwCreateWindow(camera.width, camera.height, "demo", NULL, NULL);
   glfwMakeContextCurrent(window);
   int version = gladLoadGL(glfwGetProcAddress);
   if (version == 0)

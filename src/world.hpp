@@ -3,16 +3,18 @@
 #include "headerLists.hpp"
 #define viewDistance 3
 #define memorySize 32
-template<class C>
+
+//worldVector是一个模仿vector的简易结构体,用以实现区块的动态存储和按索引快速读取
+template<class C,int N>
 struct worldVector{
-  worldVector(C c)
-  {
-
-  }
-  worldVector(C c, int n) {
-
-  }
+  C *wv;
+  worldVector();
+  C& operator[](size_t i);
+private:
+  GLuint len;
 };
+
+
 struct blockFaces
 {
   // 下面
@@ -55,7 +57,7 @@ struct World
   GLuint worldVAO;
   glm::ivec2 cameraChunk;
   int *mapX, *mapZ;
-  std::vector<std::vector<chunk,chunk[10]>,chunk[10]> memoryChunks;
+  worldVector<worldVector<chunk,32>,32> memoryChunks;
   chunk viewChunks[(viewDistance * 2 + 1) * (viewDistance * 2 + 1)];
   GLfloat *vertices;
   bool isFirst = true;

@@ -1,29 +1,30 @@
 #include "noise.hpp"
 #include <random>
 #include <thread>
-// 梯度向量取值区
-glm::vec2 radian[8] = {
-    {1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
-// glm::vec2 distanceVec[16][16][4]={
-
-// }
-Noise::Noise(const glm::vec2 blockPosition, const glm::vec2 chunkPosition)
+Noise::Noise(const glm::vec2 chunkPosition)
 {
     this->chunkPosition = chunkPosition;
     this->GradientVec();
-    glm::ivec2 distanceVec[4];
-    this->DistanceVec(blockPosition, distanceVec);
-    float dotFloat[4];
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 16; i++)
     {
-        dotFloat[i] = this->dot(distanceVec[i], this->gradientVec[i]);
+        for (int ii = 0; ii < 16; ii++)
+        {
+            glm::vec2 distanceVec[4];
+            this->DistanceVec(glm::vec2(i, ii), distanceVec);
+            float dotFloat[4];
+            for (int iii = 0; iii < 4; iii++)
+            {
+                dotFloat[iii] = this->dot(distanceVec[iii], this->gradientVec[iii]);
+            }
+            float u = static_cast<float>(i + 1) / 16;
+            float v = static_cast<float>(ii + 1) / 16;
+            float tempu1, tempu2, tempv;
+            tempu1 = this->lerp(dotFloat[0], dotFloat[1], u);
+            tempu2 = this->lerp(dotFloat[3], dotFloat[2], u);
+            tempv = this->lerp(tempu1, tempu2, v);
+            this->finNum[i][ii] = static_cast<float>(((smoothstep(tempv)/2)>=0.0f)?(smoothstep(tempv)/2):0);
+        }
     }
-    float u = fade(blockPosition.x);
-    float v = fade(blockPosition.y);
-    float tempu1, tempu2, tempv;
-    tempu1 = this->lerp(dotFloat[0], dotFloat[1], u);
-    tempu2 = this->lerp(dotFloat[3], dotFloat[2], u);
-    this->finNum = this->lerp(tempu1, tempu2, v);
 }
 Noise::~Noise()
 {
@@ -31,7 +32,9 @@ Noise::~Noise()
 // 哈希函数
 float hash(int x, int y)
 {
-    return static_cast<float>((x + y) / (x == 0 ? 1 : x));
+    // 使用更复杂的哈希函数
+    size_t seed = static_cast<size_t>(x) ^ (static_cast<size_t>(y) << 1);
+    return static_cast<float>(seed % 1000) / 1000.0f; // 归一化到 [0, 1]
 }
 // 生成随机梯度向量
 void Noise::GradientVec()
@@ -40,28 +43,29 @@ void Noise::GradientVec()
     float hash2 = hash(this->chunkPosition.x, this->chunkPosition.y + 1);
     float hash3 = hash(this->chunkPosition.x + 1, this->chunkPosition.y + 1);
     float hash4 = hash(this->chunkPosition.x + 1, this->chunkPosition.y);
-    std::mt19937_64 genLB(hash1);
-    std::mt19937_64 genLT(hash2);
-    std::mt19937_64 genRT(hash3);
-    std::mt19937_64 genRB(hash4);
-    std::uniform_real_distribution<> dis(0, 7);
-    this->gradientVec[0] = radian[static_cast<int>(dis(genLB))];
-    this->gradientVec[1] = radian[static_cast<int>(dis(genLT))];
-    this->gradientVec[2] = radian[static_cast<int>(dis(genRT))];
-    this->gradientVec[3] = radian[static_cast<int>(dis(genRB))];
+    std::mt19937 genLB(static_cast<unsigned long long>(hash1 * 1000000));
+    std::mt19937 genLT(static_cast<unsigned long long>(hash2 * 1000000));
+    std::mt19937 genRT(static_cast<unsigned long long>(hash3 * 1000000));
+    std::mt19937 genRB(static_cast<unsigned long long>(hash4 * 1000000));
+    std::uniform_real_distribution<float> dis(-1.0f, 1.0f); // 生成 [-1, 1] 区间的随机数
+                                                            // 生成四个随机梯度向量
+    this->gradientVec[0] = glm::vec2(std::make_pair(dis(genLB), dis(genLB)).first, std::make_pair(dis(genLB), dis(genLB)).second);
+    this->gradientVec[1] = glm::vec2(std::make_pair(dis(genLT), dis(genLT)).first, std::make_pair(dis(genLT), dis(genLT)).second);
+    this->gradientVec[2] = glm::vec2(std::make_pair(dis(genRT), dis(genRT)).first, std::make_pair(dis(genRT), dis(genRT)).second);
+    this->gradientVec[3] = glm::vec2(std::make_pair(dis(genRB), dis(genRB)).first, std::make_pair(dis(genRB), dis(genRB)).second);
 }
 
 // 计算方向向量
-void Noise::DistanceVec(const glm::ivec2 &blockPosition, glm::ivec2 (&distanceVec)[4])
+void Noise::DistanceVec(const glm::vec2 &blockPosition, glm::vec2 (&distanceVec)[4])
 {
     glm::ivec2 leftBottom(0, 0);
     glm::ivec2 temp;
     temp.x = leftBottom.x - blockPosition.x;
     temp.y = leftBottom.y - blockPosition.y;
-    distanceVec[0] = glm::vec2(temp.x, temp.y);
-    distanceVec[1] = glm::vec2(temp.x, temp.y + 16);
-    distanceVec[2] = glm::vec2(temp.x + 16, temp.y + 16);
-    distanceVec[3] = glm::vec2(temp.x + 16, temp.y);
+    distanceVec[0] = glm::vec2(static_cast<float>(temp.x) / 16, static_cast<float>(temp.y) / 16);
+    distanceVec[1] = glm::vec2(static_cast<float>(temp.x) / 16, static_cast<float>(temp.y + 16) / 16);
+    distanceVec[2] = glm::vec2(static_cast<float>(temp.x + 16) / 16, static_cast<float>(temp.y + 16) / 16);
+    distanceVec[3] = glm::vec2(static_cast<float>(temp.x + 16) / 16, static_cast<float>(temp.y) / 16);
 }
 
 // 计算点积
@@ -73,7 +77,7 @@ float Noise::dot(const glm::vec2 &a, const glm::vec2 &b)
 double Noise::lerp(float a, float b, float t) { return a + t * (b - a); }
 
 // 平滑插值函数
-float Noise::fade(float t)
+float Noise::smoothstep(float t)
 {
-    return t * t * t * (t * (t * 6 - 15) + 10);
+    return t * t * (3 - 2 * t);
 }

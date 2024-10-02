@@ -1,6 +1,7 @@
 #include "world.hpp"
 #include "noise.hpp"
-#include"thread"
+#include "thread"
+
 void block::GenerateBlockVertices(blockFaces *blockFaces)
 {
     /*
@@ -262,6 +263,7 @@ block::block(glm::vec3 Pos, type type)
 
 void chunk::createBlock()
 {
+    Noise noise(this->c_position);
     glm::vec2 temp = glm::vec2(this->c_position.x * 16, this->c_position.y * 16);
     int i = 0;
     for (int x = temp.x; x < temp.x + 16; x++)
@@ -269,10 +271,10 @@ void chunk::createBlock()
         int j = 0;
         for (int z = temp.y; z < temp.y + 16; z++)
         {
-            Noise noise(glm::vec2(i, j), this->c_position);
             for (int ii = 0; ii < this->c_height; ii++)
             {
-                if (ii <= noise.finNum)
+                int hei = static_cast<int>(noise.finNum[i][j] * this->c_height);
+                if (ii <= hei||ii<=10)
                 {
                     block temp(glm::vec3(x, ii, z), stone);
                     this->c_blocks[i][j][ii] = temp;
@@ -300,14 +302,9 @@ void World::updateCameraChunk(glm::vec3 viewPosition)
 {
     getWorld().cameraChunk.x = floor(viewPosition.x / 16);
     getWorld().cameraChunk.y = floor(viewPosition.z / 16);
-    std::cout << "cameraChunk:" << getWorld().cameraChunk.x << " " << getWorld().cameraChunk.y << std::endl;
 }
 bool World::checkhasChunk(glm::ivec2 position)
 {
-    if (isFirst)
-    {
-        return false;
-    }
     return this->memoryChunks[position.x][position.y].hasBlock;
 }
 glm::ivec2 World::changeCoordToIndex(glm::vec2 position)
@@ -339,96 +336,17 @@ glm::ivec2 World::changeCoordToIndex(glm::vec2 position)
             tempIndex.y = 2 * abs(position.y) - 1;
         }
     }
-    std::cout<<"pos:"<<position.x<<" "<<position.y<<"    "<<"index:"<<tempIndex.x<<" "<<tempIndex.y<<std::endl;
     return tempIndex;
 }
 void World::createChunk(glm::ivec2 position)
 {
-    if (checkhasChunk(changeCoordToIndex(position)))
-        ;
+    if (!checkhasChunk(changeCoordToIndex(position)))
+    {
+        chunk temp(position);
+        glm::ivec2 index = changeCoordToIndex(position);
+        this->memoryChunks[index.x][index.y] = temp;
+    }
 }
-
-// void World::makeVAO()
-// {
-//     int n = 0;
-//     for (int x = (cameraChunk.x - viewDistance); x < (cameraChunk.x + viewDistance); x++)
-//     {
-//         for (int z = (cameraChunk.y - viewDistance); z < (cameraChunk.y + viewDistance); z++)
-//         {
-//             for (int i = 1; i < 16; i++)
-//             {
-//                 for (int ii = 1; ii < 16; ii++)
-//                 {
-//                     for (int iii = 1; iii < 128; iii++)
-//                     {
-//                         blockFaces temp;
-//                         this->chunks[x][z].c_blocks[i][ii][iii].GenerateBlockVertices(&temp);
-//                         if (this->chunks[x][z].c_blocks[i][ii][iii].b_type != air && this->chunks[x][z].c_blocks[i - 1][ii][iii].b_type == air)
-//                         {
-//                             for (int ind = n; ind < 32; ind++)
-//                             {
-//                                 vertices[ind] = temp.left[ind];
-//                             }
-//                             n += 32;
-//                         }
-//                         if (this->chunks[x][z].c_blocks[i][ii][iii].b_type != air && this->chunks[x][z].c_blocks[i + 1][ii][iii].b_type == air)
-//                         {
-//                             for (int ind = n; ind < 32; ind++)
-//                             {
-//                                 vertices[ind] = temp.right[ind];
-//                             }
-//                             n += 32;
-//                         }
-//                         if (this->chunks[x][z].c_blocks[i][ii][iii].b_type != air && this->chunks[x][z].c_blocks[i][ii - 1][iii].b_type == air)
-//                         {
-//                             for (int ind = n; ind < 32; ind++)
-//                             {
-//                                 vertices[ind] = temp.front[ind];
-//                             }
-//                             n += 32;
-//                         }
-//                         if (this->chunks[x][z].c_blocks[i][ii][iii].b_type != air && this->chunks[x][z].c_blocks[i][ii + 1][iii].b_type == air)
-//                         {
-//                             for (int ind = n; ind < 32; ind++)
-//                             {
-//                                 vertices[ind] = temp.back[ind];
-//                             }
-//                             n += 32;
-//                         }
-//                         if (this->chunks[x][z].c_blocks[i][ii][iii].b_type != air && this->chunks[x][z].c_blocks[i][ii][iii + 1].b_type == air)
-//                         {
-//                             for (int ind = n; ind < 32; ind++)
-//                             {
-//                                 vertices[ind] = temp.top[ind];
-//                             }
-//                             n += 32;
-//                         }
-//                         if (this->chunks[x][z].c_blocks[i][ii][iii].b_type != air && this->chunks[x][z].c_blocks[i][ii][iii - 1].b_type == air)
-//                         {
-//                             for (int ind = n; ind < 32; ind++)
-//                             {
-//                                 vertices[ind] = temp.bottom[ind];
-//                             }
-//                             n += 32;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-//     GLuint worldVBO;
-//     glGenVertexArrays(1, &worldVAO);
-//     glBindVertexArray(worldVAO);
-//     glGenBuffers(1, &worldVBO);
-//     glBindBuffer(GL_ARRAY_BUFFER, worldVBO);
-//     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-//     glEnableVertexAttribArray(0);
-//     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-//     glEnableVertexAttribArray(1);
-//     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-//     glEnableVertexAttribArray(2);
-//     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-// }
 
 void World::renderChunk()
 {
@@ -437,26 +355,51 @@ void World::renderChunk()
 }
 void World::loadViewChunk()
 {
-    for (int x = (cameraChunk.x - viewDistance); x < (cameraChunk.x + viewDistance); x++)
+    int i = 0;
+    for (int x = (cameraChunk.x - viewDistance); x <= (cameraChunk.x + viewDistance); x++)
     {
-        for (int z = (cameraChunk.y - viewDistance); z < (cameraChunk.y + viewDistance); z++)
+        int ii = 0;
+        for (int z = (cameraChunk.y - viewDistance); z <= (cameraChunk.y + viewDistance); z++)
         {
             createChunk(glm::ivec2(x, z));
-            std::cout << "chunk" << x << " " << z << std::endl;
-            this->viewChunks[x * (viewDistance * 2 + 1) + z] = this->memoryChunks[x][z];
+            glm::ivec2 temp = changeCoordToIndex(glm::vec2(x, z));
+            this->viewChunks[i * (viewDistance * 2 + 1) + ii] = this->memoryChunks[temp.x][temp.y];
+            ii++;
         }
+        i++;
     }
     this->isFirst = false;
 }
 void World::saveChunk()
 {
-    if (this->changeCoordToIndex(cameraChunk).x>=memorySize-8||this->changeCoordToIndex(cameraChunk).y>=memorySize-8)
+    if (this->changeCoordToIndex(cameraChunk).x >= memorySize - 8 || this->changeCoordToIndex(cameraChunk).y >= memorySize - 8)
     {
-
     }
-
 }
 World::World()
 {
     loadViewChunk();
+}
+
+template <class C, int N>
+worldVector<C, N>::worldVector()
+{
+    this->wv = new C[N];
+    this->len = N;
+}
+template <class C, int N>
+C &worldVector<C, N>::operator[](size_t index)
+{
+    if (index > this->len)
+    {
+        C *temp = this->wv;
+        this->wv = new C[index + 2];
+        for (int i = 0; i < this->len; i++)
+        {
+            this->wv[i] = temp[i];
+        }
+        delete[] temp;
+        this->len = index + 2;
+    }
+    return this->wv[index];
 }
