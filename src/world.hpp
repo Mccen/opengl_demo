@@ -1,41 +1,34 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
-#include "headerLists.hpp"
 #define viewDistance 3
 #define memorySize 32
 
-//worldVector是一个模仿vector的简易结构体,用以实现区块的动态存储和按索引快速读取
-template<class C,int N>
-struct worldVector{
-  C *wv;
-  worldVector();
-  C& operator[](size_t i);
-private:
-  GLuint len;
-};
-
-
-struct blockFaces
-{
-  // 下面
-  GLfloat bottom[32];
-  // 上面
-  GLfloat top[32];
-  // 前面
-  GLfloat front[32];
-  // 后面
-  GLfloat back[32];
-  // 左面
-  GLfloat left[32];
-  // 右面
-  GLfloat right[32];
-};
+#include "headerLists.hpp"
+#include "utils/Vector.hpp"
+#include "utils/Noise.hpp"
+#include "utils/Mesh.hpp"
+#include "utils/Single.hpp"
 struct block
 {
+  enum face
+  {
+    bottom = 0,
+    top,
+    left,
+    right,
+    front,
+    back
+  };
   bool isShow;
   glm::vec3 b_position;
   type b_type;
-  void GenerateBlockVertices(blockFaces *blockFaces);
+  Vector<Mesh, 3> b_mesh;
+  void GenBottomVertices();
+  void GenTopVertices();
+  void GenLeftVertices();
+  void GenRightVertices();
+  void GenFrontVertices();
+  void GenBackVertices();
   block() {}
   block(glm::vec3 Pos, type type);
 };
@@ -52,18 +45,21 @@ struct chunk
   void createBlock();
   bool hasBlock = false;
 };
-struct World
+struct World : Single
+
 {
   GLuint worldVAO;
   glm::ivec2 cameraChunk;
   int *mapX, *mapZ;
-  worldVector<worldVector<chunk,32>,32> memoryChunks;
+  Vector<Vector<chunk, 5>, 5> memoryChunks;
   chunk viewChunks[(viewDistance * 2 + 1) * (viewDistance * 2 + 1)];
   GLfloat *vertices;
   bool isFirst = true;
   // 更新相机的chunk
   static void updateCameraChunk(glm::vec3 viewPosition);
+  // 检查是否有chunk
   bool checkhasChunk(glm::ivec2 position);
+  // 创建chunk
   void createChunk(glm::ivec2 position);
   // 将坐标转换为chunks的索引
   glm::ivec2 changeCoordToIndex(glm::vec2 position);
@@ -71,10 +67,11 @@ struct World
   void renderChunk();
   void loadViewChunk();
   void saveChunk();
-  World &operator=(const World &) = delete;
-  World(const World &) = delete;
-  static World& getWorld(){
-    static World m_world; return m_world;
+
+  static World &getWorld()
+  {
+    static World m_world;
+    return m_world;
   }
 
 private:

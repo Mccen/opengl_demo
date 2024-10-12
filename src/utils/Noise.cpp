@@ -1,6 +1,5 @@
-#include "noise.hpp"
+#include "Noise.hpp"
 #include <random>
-#include <thread>
 Noise::Noise(const glm::vec2 chunkPosition)
 {
     this->chunkPosition = chunkPosition;
@@ -26,13 +25,9 @@ Noise::Noise(const glm::vec2 chunkPosition)
         }
     }
 }
-Noise::~Noise()
-{
-}
 // 哈希函数
 float hash(int x, int y)
 {
-    // 使用更复杂的哈希函数
     size_t seed = static_cast<size_t>(x) ^ (static_cast<size_t>(y) << 1);
     return static_cast<float>(seed % 1000) / 1000.0f; // 归一化到 [0, 1]
 }

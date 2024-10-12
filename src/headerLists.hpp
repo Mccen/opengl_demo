@@ -8,9 +8,9 @@
 #include <stb_image.h>
 
 #include <string>
-#include <vector>
 #include <iostream>
 #include <sstream>
+#include <thread>
 
 #include "enum.hpp"
 

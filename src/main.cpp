@@ -1,4 +1,6 @@
-#include "camera.hpp"
+#include "modules/Window.hpp"
+#include "modules/Controler.hpp"
+#include "modules/Camera.hpp"
 #include "light.hpp"
 #include "load.hpp"
 #include "world.hpp"
@@ -15,33 +17,34 @@ static Light light[LIGHTS];
 static Material material[MATERIALS];
 #define TEXTURES 2
 static GLuint tex[TEXTURES];
-GLuint frames = 0;
-GLfloat elapsedTime = 0.0f;
 
 // 单例
-Camera &camera = Camera::getCamera();
-World &world = World::getWorld();
+struct World &mworld = World::getWorld();
+struct Controler &mcontroler = Controler::getControler();
+struct Window &mwindow = Window::getWindow();
+struct Camera &mcamera = Camera::getCamera();
 void init(GLFWwindow *window)
 {
 
 #include "Lists.hpp"
-  camera.updateViewPort();
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
   glfwSwapInterval(1);
-  glfwGetFramebufferSize(window, &camera.width, &camera.height);
-  glfwSetWindowSizeCallback(window, camera.reshapeCallback);
-  glfwSetCursorPosCallback(window, camera.mouseCallback);
-  glfwSetMouseButtonCallback(window, camera.mouseButtonCallback);
-  glfwSetScrollCallback(window, camera.scrollCallback);
-  glfwSetKeyCallback(window, camera.keyCallback);
+  glfwGetFramebufferSize(window, &mwindow.width, &mwindow.height);
+  glfwSetWindowSizeCallback(window, mwindow.reshapeCallback);
+  glfwSetCursorPosCallback(window, mcontroler.getMouseMoveEvent);
+  glfwSetMouseButtonCallback(window, mcontroler.getMouseButtonEvent);
+  glfwSetScrollCallback(window, mcontroler.getMouseWheelEvent);
+  glfwSetKeyCallback(window, mcontroler.getKeyEvent);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
+GLuint frames = 0;
+GLfloat elapsedTime = 0.0f;
 void fps(GLFWwindow *window)
 {
   frames++;
-  elapsedTime += camera.deltaTime;
+  elapsedTime += mcontroler.deltaTime;
   if (elapsedTime >= 1.0f)
   {
     std::stringstream ss;
@@ -58,18 +61,15 @@ void display()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glm::mat4 lmodel(1.0f);
-  lmodel = glm::rotate(lmodel, glm::radians(currentTime) * 30,
-                       glm::vec3(0.0f, 1.0f, 0.0f));
-  lmodel = glm::translate(lmodel, light[0].position);
   lmodel = glm::scale(lmodel, glm::vec3(0.2f, 0.2f, 0.2f));
   glUseProgram(program[lightProgram]);
   glBindVertexArray(obj[Cube].VAO);
   glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "lmodel"), 1,
                      GL_FALSE, value_ptr(lmodel));
   glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "view"), 1,
-                     GL_FALSE, value_ptr(camera.view));
+                     GL_FALSE, value_ptr(mcamera.view));
   glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "projection"),
-                     1, GL_FALSE, value_ptr(camera.projection));
+                     1, GL_FALSE, value_ptr(mcamera.projection));
   glUniform1i(glGetUniformLocation(program[lightProgram], "CC"), 2);
   glDrawElements(GL_TRIANGLES, obj[Cube].indices.size(), GL_UNSIGNED_INT, 0);
 
@@ -93,13 +93,14 @@ void display()
 }
 int main()
 {
-  glfwInit();
-  glfwInitHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwInitHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwInitHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  GLFWwindow *window =
-  glfwCreateWindow(camera.width, camera.height, "demo", NULL, NULL);
-  glfwMakeContextCurrent(window);
+  mwindow.createWindow(800, 600, "OpenGL", 3, 3);
+  GLFWwindow *window = mwindow.window;
+  if (window == NULL)
+  {
+    printf("Failed to create GLFW window\n");
+    glfwTerminate();
+    return -1;
+  }
   int version = gladLoadGL(glfwGetProcAddress);
   if (version == 0)
   {
@@ -109,13 +110,12 @@ int main()
   printf("Loaded OpenGL %d.%d\n", GLAD_VERSION_MAJOR(version),
          GLAD_VERSION_MINOR(version));
   init(window);
+  mcamera.createCamera(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+                       glm::vec3(0.0f, 1.0f, 0.0f));
   while (!glfwWindowShouldClose(window))
   {
-    camera.deltaTime = glfwGetTime() - camera.lastframe;
-    camera.lastframe = glfwGetTime();
-    camera.keyCallbackLongTime(window);
-    world.updateCameraChunk(camera.pos);
-    fps(window);
+    mcontroler.updateTime();
+    mcontroler.getKeyEventLongTime(window);
     display();
     glfwSwapBuffers(window);
     glfwPollEvents();

@@ -1,260 +1,211 @@
 #include "world.hpp"
-#include "noise.hpp"
-#include "thread"
 
-void block::GenerateBlockVertices(blockFaces *blockFaces)
+void block::GenBottomVertices()
 {
-    /*
-    面的次序为下上左右前后（相对于相机视角），每个面有6个点
-    0代表原点，1代表正方向，示例：000代表方块内位于0,0,0的点，这个位置的点也用来表示这个方块的位置
-    每个点有8个值，分别为x,y,z,uvx，uvy,normalx,normaly,normalz
-    */
+
     // 下
     // 顶点1 (001)
-    blockFaces->bottom[0] = this->b_position.x;
-    blockFaces->bottom[1] = this->b_position.y;
-    blockFaces->bottom[2] = this->b_position.z + 1.0f;
-    blockFaces->bottom[3] = 0.0f;  // u
-    blockFaces->bottom[4] = 0.0f;  // v
-    blockFaces->bottom[5] = 0.0f;  // nx
-    blockFaces->bottom[6] = -1.0f; // ny
-    blockFaces->bottom[7] = 0.0f;  // nz
-
+    b_mesh[face::bottom].positions[0] = this->b_position.x;
+    b_mesh[face::bottom].positions[1] = this->b_position.y;
+    b_mesh[face::bottom].positions[2] = this->b_position.z + 1.0f;
     // 顶点2 (000)
-    blockFaces->bottom[8] = this->b_position.x;
-    blockFaces->bottom[9] = this->b_position.y;
-    blockFaces->bottom[10] = this->b_position.z;
-    blockFaces->bottom[11] = 0.0f;  // u
-    blockFaces->bottom[12] = 1.0f;  // v
-    blockFaces->bottom[13] = 0.0f;  // nx
-    blockFaces->bottom[14] = -1.0f; // ny
-    blockFaces->bottom[15] = 0.0f;  // nz
-
+    b_mesh[face::bottom].positions[3] = this->b_position.x;
+    b_mesh[face::bottom].positions[4] = this->b_position.y;
+    b_mesh[face::bottom].positions[5] = this->b_position.z;
     // 顶点3 (100)
-    blockFaces->bottom[16] = this->b_position.x + 1.0f;
-    blockFaces->bottom[17] = this->b_position.y;
-    blockFaces->bottom[18] = this->b_position.z;
-    blockFaces->bottom[19] = 1.0f;  // u
-    blockFaces->bottom[20] = 1.0f;  // v
-    blockFaces->bottom[21] = 0.0f;  // nx
-    blockFaces->bottom[22] = -1.0f; // ny
-    blockFaces->bottom[23] = 0.0f;  // nz
-
+    b_mesh[face::bottom].positions[6] = this->b_position.x + 1.0f;
+    b_mesh[face::bottom].positions[7] = this->b_position.y;
+    b_mesh[face::bottom].positions[8] = this->b_position.z;
     // 顶点4 (101)
-    blockFaces->bottom[24] = this->b_position.x + 1.0f;
-    blockFaces->bottom[25] = this->b_position.y;
-    blockFaces->bottom[26] = this->b_position.z + 1.0f;
-    blockFaces->bottom[27] = 1.0f;  // u
-    blockFaces->bottom[28] = 0.0f;  // v
-    blockFaces->bottom[29] = 0.0f;  // nx
-    blockFaces->bottom[30] = -1.0f; // ny
-    blockFaces->bottom[31] = 0.0f;  // nz
+    b_mesh[face::bottom].positions[9] = this->b_position.x + 1.0f;
+    b_mesh[face::bottom].positions[10] = this->b_position.y;
+    b_mesh[face::bottom].positions[11] = this->b_position.z + 1.0f;
 
+    b_mesh[face::bottom].texCoords[0] = 0.0f; // u
+    b_mesh[face::bottom].texCoords[1] = 0.0f; // v
+    b_mesh[face::bottom].texCoords[2] = 0.0f; // u
+    b_mesh[face::bottom].texCoords[3] = 1.0f; // v
+    b_mesh[face::bottom].texCoords[4] = 1.0f; // u
+    b_mesh[face::bottom].texCoords[5] = 1.0f; // v
+    b_mesh[face::bottom].texCoords[6] = 1.0f; // u
+    b_mesh[face::bottom].texCoords[7] = 0.0f; // v
+
+    // 法线
+    b_mesh[face::bottom].normals[0] = 0.0f;  // nx
+    b_mesh[face::bottom].normals[1] = -1.0f; // ny
+    b_mesh[face::bottom].normals[2] = 0.0f;  // nz
+}
+void block::GenTopVertices()
+{
     // 上
     // 顶点1 (010)
-    blockFaces->top[0] = this->b_position.x;
-    blockFaces->top[1] = this->b_position.y + 1.0f;
-    blockFaces->top[2] = this->b_position.z;
-    blockFaces->top[3] = 0.0f; // u
-    blockFaces->top[4] = 0.0f; // v
-    blockFaces->top[5] = 0.0f; // nx
-    blockFaces->top[6] = 1.0f; // ny
-    blockFaces->top[7] = 0.0f; // nz
-
+    b_mesh[face::top].positions[0] = this->b_position.x;
+    b_mesh[face::top].positions[1] = this->b_position.y + 1.0f;
+    b_mesh[face::top].positions[2] = this->b_position.z;
     // 顶点2 (011)
-    blockFaces->top[8] = this->b_position.x;
-    blockFaces->top[9] = this->b_position.y + 1.0f;
-    blockFaces->top[10] = this->b_position.z + 1.0f;
-    blockFaces->top[11] = 0.0f; // u
-    blockFaces->top[12] = 1.0f; // v
-    blockFaces->top[13] = 0.0f; // nx
-    blockFaces->top[14] = 1.0f; // ny
-    blockFaces->top[15] = 0.0f; // nz
-
+    b_mesh[face::top].positions[3] = this->b_position.x;
+    b_mesh[face::top].positions[4] = this->b_position.y + 1.0f;
+    b_mesh[face::top].positions[5] = this->b_position.z + 1.0f;
     // 顶点3 (111)
-    blockFaces->top[16] = this->b_position.x + 1.0f;
-    blockFaces->top[17] = this->b_position.y + 1.0f;
-    blockFaces->top[18] = this->b_position.z + 1.0f;
-    blockFaces->top[19] = 1.0f; // u
-    blockFaces->top[20] = 1.0f; // v
-    blockFaces->top[21] = 0.0f; // nx
-    blockFaces->top[22] = 1.0f; // ny
-    blockFaces->top[23] = 0.0f; // nz
-
+    b_mesh[face::top].positions[6] = this->b_position.x + 1.0f;
+    b_mesh[face::top].positions[7] = this->b_position.y + 1.0f;
+    b_mesh[face::top].positions[8] = this->b_position.z + 1.0f;
     // 顶点4 (110)
-    blockFaces->top[24] = this->b_position.x + 1.0f;
-    blockFaces->top[25] = this->b_position.y + 1.0f;
-    blockFaces->top[26] = this->b_position.z;
-    blockFaces->top[27] = 1.0f; // u
-    blockFaces->top[28] = 0.0f; // v
-    blockFaces->top[29] = 0.0f; // nx
-    blockFaces->top[30] = 1.0f; // ny
-    blockFaces->top[31] = 0.0f; // nz
+    b_mesh[face::top].positions[9] = this->b_position.x + 1.0f;
+    b_mesh[face::top].positions[10] = this->b_position.y + 1.0f;
+    b_mesh[face::top].positions[11] = this->b_position.z;
 
+    b_mesh[face::top].texCoords[0] = 0.0f; // u
+    b_mesh[face::top].texCoords[1] = 0.0f; // v
+    b_mesh[face::top].texCoords[2] = 0.0f; // u
+    b_mesh[face::top].texCoords[3] = 1.0f; // v
+    b_mesh[face::top].texCoords[4] = 1.0f; // u
+    b_mesh[face::top].texCoords[5] = 1.0f; // v
+    b_mesh[face::top].texCoords[6] = 1.0f; // u
+    b_mesh[face::top].texCoords[7] = 0.0f; // v
+
+    // 法线
+    b_mesh[face::top].normals[0] = 0.0f; // nx
+    b_mesh[face::top].normals[1] = 1.0f; // ny
+    b_mesh[face::top].normals[2] = 0.0f; // nz
+}
+void block::GenLeftVertices()
+{
     // 左
     // 顶点1 (001)
-    blockFaces->left[0] = this->b_position.x;
-    blockFaces->left[1] = this->b_position.y;
-    blockFaces->left[2] = this->b_position.z + 1.0f;
-    blockFaces->left[3] = 0.0f;  // u
-    blockFaces->left[4] = 0.0f;  // v
-    blockFaces->left[5] = -1.0f; // nx
-    blockFaces->left[6] = 0.0f;  // ny
-    blockFaces->left[7] = 0.0f;  // nz
-
+    b_mesh[face::left].positions[0] = this->b_position.x;
+    b_mesh[face::left].positions[1] = this->b_position.y;
+    b_mesh[face::left].positions[2] = this->b_position.z + 1.0f;
     // 顶点2 (011)
-    blockFaces->left[8] = this->b_position.x;
-    blockFaces->left[9] = this->b_position.y + 1.0f;
-    blockFaces->left[10] = this->b_position.z + 1.0f;
-    blockFaces->left[11] = 0.0f;  // u
-    blockFaces->left[12] = 1.0f;  // v
-    blockFaces->left[13] = -1.0f; // nx
-    blockFaces->left[14] = 0.0f;  // ny
-    blockFaces->left[15] = 0.0f;  // nz
-
+    b_mesh[face::left].positions[3] = this->b_position.x;
+    b_mesh[face::left].positions[4] = this->b_position.y + 1.0f;
+    b_mesh[face::left].positions[5] = this->b_position.z + 1.0f;
     // 顶点3 (010)
-    blockFaces->left[16] = this->b_position.x;
-    blockFaces->left[17] = this->b_position.y + 1.0f;
-    blockFaces->left[18] = this->b_position.z;
-    blockFaces->left[19] = 1.0f;  // u
-    blockFaces->left[20] = 1.0f;  // v
-    blockFaces->left[21] = -1.0f; // nx
-    blockFaces->left[22] = 0.0f;  // ny
-    blockFaces->left[23] = 0.0f;  // nz
-
+    b_mesh[face::left].positions[6] = this->b_position.x;
+    b_mesh[face::left].positions[7] = this->b_position.y + 1.0f;
+    b_mesh[face::left].positions[8] = this->b_position.z;
     // 顶点4 (000)
-    blockFaces->left[24] = this->b_position.x;
-    blockFaces->left[25] = this->b_position.y;
-    blockFaces->left[26] = this->b_position.z;
-    blockFaces->left[27] = 1.0f;  // u
-    blockFaces->left[28] = 0.0f;  // v
-    blockFaces->left[29] = -1.0f; // nx
-    blockFaces->left[30] = 0.0f;  // ny
-    blockFaces->left[31] = 0.0f;  // nz
+    b_mesh[face::left].positions[9] = this->b_position.x;
+    b_mesh[face::left].positions[10] = this->b_position.y;
+    b_mesh[face::left].positions[11] = this->b_position.z;
 
+    b_mesh[face::left].texCoords[0] = 0.0f; // u
+    b_mesh[face::left].texCoords[1] = 0.0f; // v
+    b_mesh[face::left].texCoords[2] = 0.0f; // u
+    b_mesh[face::left].texCoords[3] = 1.0f; // v
+    b_mesh[face::left].texCoords[4] = 1.0f; // u
+    b_mesh[face::left].texCoords[5] = 1.0f; // v
+    b_mesh[face::left].texCoords[6] = 1.0f; // u
+    b_mesh[face::left].texCoords[7] = 0.0f; // v
+
+    // 法线
+    b_mesh[face::left].normals[0] = -1.0f; // nx
+    b_mesh[face::left].normals[1] = 0.0f;  // ny
+    b_mesh[face::left].normals[2] = 0.0f;  // nz
+}
+void block::GenRightVertices()
+{
     // 右
     // 顶点1 (100)
-    blockFaces->right[0] = this->b_position.x + 1.0f; // X
-    blockFaces->right[1] = this->b_position.y;        // Y
-    blockFaces->right[2] = this->b_position.z;        // Z
-    blockFaces->right[3] = 0.0f;                      // U
-    blockFaces->right[4] = 0.0f;                      // V
-    blockFaces->right[5] = 1.0f;                      // Nx
-    blockFaces->right[6] = 0.0f;                      // Ny
-    blockFaces->right[7] = 0.0f;                      // Nz
-
+    b_mesh[face::right].positions[0] = this->b_position.x + 1.0f;
+    b_mesh[face::right].positions[1] = this->b_position.y;
+    b_mesh[face::right].positions[2] = this->b_position.z;
     // 顶点2 (110)
-    blockFaces->right[8] = this->b_position.x + 1.0f; // X
-    blockFaces->right[9] = this->b_position.y + 1.0f; // Y
-    blockFaces->right[10] = this->b_position.z;       // Z
-    blockFaces->right[11] = 0.0f;                     // U
-    blockFaces->right[12] = 1.0f;                     // V
-    blockFaces->right[13] = 1.0f;                     // Nx
-    blockFaces->right[14] = 0.0f;                     // Ny
-    blockFaces->right[15] = 0.0f;                     // Nz
-
+    b_mesh[face::right].positions[3] = this->b_position.x + 1.0f;
+    b_mesh[face::right].positions[4] = this->b_position.y + 1.0f;
+    b_mesh[face::right].positions[5] = this->b_position.z;
     // 顶点3 (111)
-    blockFaces->right[16] = this->b_position.x + 1.0f; // X
-    blockFaces->right[17] = this->b_position.y + 1.0f; // Y
-    blockFaces->right[18] = this->b_position.z + 1.0f; // Z
-    blockFaces->right[19] = 1.0f;                      // U
-    blockFaces->right[20] = 1.0f;                      // V
-    blockFaces->right[21] = 1.0f;                      // Nx
-    blockFaces->right[22] = 0.0f;                      // Ny
-    blockFaces->right[23] = 0.0f;                      // Nz
-
+    b_mesh[face::right].positions[6] = this->b_position.x + 1.0f;
+    b_mesh[face::right].positions[7] = this->b_position.y + 1.0f;
+    b_mesh[face::right].positions[8] = this->b_position.z + 1.0f;
     // 顶点4 (101)
-    blockFaces->right[24] = this->b_position.x + 1.0f; // X
-    blockFaces->right[25] = this->b_position.y;        // Y
-    blockFaces->right[26] = this->b_position.z + 1.0f; // Z
-    blockFaces->right[27] = 1.0f;                      // U
-    blockFaces->right[28] = 0.0f;                      // V
-    blockFaces->right[29] = 1.0f;                      // Nx
-    blockFaces->right[30] = 0.0f;                      // Ny
-    blockFaces->right[31] = 0.0f;                      // Nz
+    b_mesh[face::right].positions[9] = this->b_position.x + 1.0f;
+    b_mesh[face::right].positions[10] = this->b_position.y;
+    b_mesh[face::right].positions[11] = this->b_position.z + 1.0f;
 
+    b_mesh[face::right].texCoords[0] = 0.0f; // u
+    b_mesh[face::right].texCoords[1] = 0.0f; // v
+    b_mesh[face::right].texCoords[2] = 0.0f; // u
+    b_mesh[face::right].texCoords[3] = 1.0f; // v
+    b_mesh[face::right].texCoords[4] = 1.0f; // u
+    b_mesh[face::right].texCoords[5] = 1.0f; // v
+    b_mesh[face::right].texCoords[6] = 1.0f; // u
+    b_mesh[face::right].texCoords[7] = 0.0f; // v
+
+    // 法线
+    b_mesh[face::right].normals[0] = 1.0f; // nx
+    b_mesh[face::right].normals[1] = 0.0f; // ny
+    b_mesh[face::right].normals[2] = 0.0f;
+}
+void block::GenFrontVertices()
+{
     // 前
     // 顶点1 (000)
-    blockFaces->front[0] = this->b_position.x; // X
-    blockFaces->front[1] = this->b_position.y; // Y
-    blockFaces->front[2] = this->b_position.z; // Z
-    blockFaces->front[3] = 0.0f;               // U
-    blockFaces->front[4] = 0.0f;               // V
-    blockFaces->front[5] = 0.0f;               // Nx
-    blockFaces->front[6] = 0.0f;               // Ny
-    blockFaces->front[7] = -1.0f;              // Nz
-
+    b_mesh[face::front].positions[0] = this->b_position.x;
+    b_mesh[face::front].positions[1] = this->b_position.y;
+    b_mesh[face::front].positions[2] = this->b_position.z;
     // 顶点2 (010)
-    blockFaces->front[8] = this->b_position.x;        // X
-    blockFaces->front[9] = this->b_position.y + 1.0f; // Y
-    blockFaces->front[10] = this->b_position.z;       // Z
-    blockFaces->front[11] = 0.0f;                     // U
-    blockFaces->front[12] = 1.0f;                     // V
-    blockFaces->front[13] = 0.0f;                     // Nx
-    blockFaces->front[14] = 0.0f;                     // Ny
-    blockFaces->front[15] = -1.0f;                    // Nz
-
+    b_mesh[face::front].positions[3] = this->b_position.x;
+    b_mesh[face::front].positions[4] = this->b_position.y + 1.0f;
+    b_mesh[face::front].positions[5] = this->b_position.z;
     // 顶点3 (110)
-    blockFaces->front[16] = this->b_position.x + 1.0f; // X
-    blockFaces->front[17] = this->b_position.y + 1.0f; // Y
-    blockFaces->front[18] = this->b_position.z;        // Z
-    blockFaces->front[19] = 1.0f;                      // U
-    blockFaces->front[20] = 1.0f;                      // V
-    blockFaces->front[21] = 0.0f;                      // Nx
-    blockFaces->front[22] = 0.0f;                      // Ny
-    blockFaces->front[23] = -1.0f;                     // Nz
-
+    b_mesh[face::front].positions[6] = this->b_position.x + 1.0f;
+    b_mesh[face::front].positions[7] = this->b_position.y + 1.0f;
+    b_mesh[face::front].positions[8] = this->b_position.z;
     // 顶点4 (100)
-    blockFaces->front[24] = this->b_position.x + 1.0f; // X
-    blockFaces->front[25] = this->b_position.y;        // Y
-    blockFaces->front[26] = this->b_position.z;        // Z
-    blockFaces->front[27] = 1.0f;                      // U
-    blockFaces->front[28] = 0.0f;                      // V
-    blockFaces->front[29] = 0.0f;                      // Nx
-    blockFaces->front[30] = 0.0f;                      // Ny
-    blockFaces->front[31] = -1.0f;                     // Nz
+    b_mesh[face::front].positions[9] = this->b_position.x + 1.0f;
+    b_mesh[face::front].positions[10] = this->b_position.y;
+    b_mesh[face::front].positions[11] = this->b_position.z;
 
+    b_mesh[face::front].texCoords[0] = 0.0f; // u
+    b_mesh[face::front].texCoords[1] = 0.0f; // v
+    b_mesh[face::front].texCoords[2] = 0.0f; // u
+    b_mesh[face::front].texCoords[3] = 1.0f; // v
+    b_mesh[face::front].texCoords[4] = 1.0f; // u
+    b_mesh[face::front].texCoords[5] = 1.0f; // v
+    b_mesh[face::front].texCoords[6] = 1.0f; // u
+    b_mesh[face::front].texCoords[7] = 0.0f; // v
+
+    // 法线
+    b_mesh[face::front].normals[0] = 0.0f;  // nx
+    b_mesh[face::front].normals[1] = 0.0f;  // ny
+    b_mesh[face::front].normals[2] = -1.0f; // nz
+}
+void block::GenBackVertices()
+{
     // 后
     // 顶点1 (101)
-    blockFaces->back[0] = this->b_position.x + 1.0f; // X
-    blockFaces->back[1] = this->b_position.y;        // Y
-    blockFaces->back[2] = this->b_position.z + 1.0f; // Z
-    blockFaces->back[3] = 0.0f;                      // U
-    blockFaces->back[4] = 0.0f;                      // V
-    blockFaces->back[5] = 0.0f;                      // Nx
-    blockFaces->back[6] = 0.0f;                      // Ny
-    blockFaces->back[7] = 1.0f;                      // Nz
-
+    b_mesh[face::back].positions[0] = this->b_position.x + 1.0f;
+    b_mesh[face::back].positions[1] = this->b_position.y;
+    b_mesh[face::back].positions[2] = this->b_position.z + 1.0f;
     // 顶点2 (111)
-    blockFaces->back[8] = this->b_position.x + 1.0f;  // X
-    blockFaces->back[9] = this->b_position.y + 1.0f;  // Y
-    blockFaces->back[10] = this->b_position.z + 1.0f; // Z
-    blockFaces->back[11] = 0.0f;                      // U
-    blockFaces->back[12] = 1.0f;                      // V
-    blockFaces->back[13] = 0.0f;                      // Nx
-    blockFaces->back[14] = 0.0f;                      // Ny
-    blockFaces->back[15] = 1.0f;                      // Nz
-
+    b_mesh[face::back].positions[3] = this->b_position.x + 1.0f;
+    b_mesh[face::back].positions[4] = this->b_position.y + 1.0f;
+    b_mesh[face::back].positions[5] = this->b_position.z + 1.0f;
     // 顶点3 (011)
-    blockFaces->back[16] = this->b_position.x;        // X
-    blockFaces->back[17] = this->b_position.y + 1.0f; // Y
-    blockFaces->back[18] = this->b_position.z + 1.0f; // Z
-    blockFaces->back[19] = 1.0f;                      // U
-    blockFaces->back[20] = 1.0f;                      // V
-    blockFaces->back[21] = 0.0f;                      // Nx
-    blockFaces->back[22] = 0.0f;                      // Ny
-    blockFaces->back[23] = 1.0f;                      // Nz
-
+    b_mesh[face::back].positions[6] = this->b_position.x;
+    b_mesh[face::back].positions[7] = this->b_position.y + 1.0f;
+    b_mesh[face::back].positions[8] = this->b_position.z+ 1.0f;
     // 顶点4 (001)
-    blockFaces->back[24] = this->b_position.x;        // X
-    blockFaces->back[25] = this->b_position.y;        // Y
-    blockFaces->back[26] = this->b_position.z + 1.0f; // Z
-    blockFaces->back[27] = 1.0f;                      // U
-    blockFaces->back[28] = 0.0f;                      // V
-    blockFaces->back[29] = 0.0f;                      // Nx
-    blockFaces->back[30] = 0.0f;                      // Ny
-    blockFaces->back[31] = 1.0f;                      // Nz
+    b_mesh[face::back].positions[9] = this->b_position.x;
+    b_mesh[face::back].positions[10] = this->b_position.y;
+    b_mesh[face::back].positions[11] = this->b_position.z+ 1.0f;
+
+    b_mesh[face::back].texCoords[0] = 0.0f; // u
+    b_mesh[face::back].texCoords[1] = 0.0f; // v
+    b_mesh[face::back].texCoords[2] = 0.0f; // u
+    b_mesh[face::back].texCoords[3] = 1.0f; // v
+    b_mesh[face::back].texCoords[4] = 1.0f; // u
+    b_mesh[face::back].texCoords[5] = 1.0f; // v
+    b_mesh[face::back].texCoords[6] = 1.0f; // u
+    b_mesh[face::back].texCoords[7] = 0.0f; // v
+
+    // 法线
+    b_mesh[face::back].normals[0] = 0.0f;  // nx
+    b_mesh[face::back].normals[1] = 0.0f;  // ny
+    b_mesh[face::back].normals[2] = 1.0f; // nz
 }
+
 block::block(glm::vec3 Pos, type type)
 {
     this->b_position = Pos;
@@ -274,7 +225,7 @@ void chunk::createBlock()
             for (int ii = 0; ii < this->c_height; ii++)
             {
                 int hei = static_cast<int>(noise.finNum[i][j] * this->c_height);
-                if (ii <= hei||ii<=10)
+                if (ii <= hei || ii <= 10)
                 {
                     block temp(glm::vec3(x, ii, z), stone);
                     this->c_blocks[i][j][ii] = temp;
@@ -347,7 +298,9 @@ void World::createChunk(glm::ivec2 position)
         this->memoryChunks[index.x][index.y] = temp;
     }
 }
-
+void World::makeVAO()
+{
+}
 void World::renderChunk()
 {
     glBindVertexArray(worldVAO);
@@ -379,27 +332,4 @@ void World::saveChunk()
 World::World()
 {
     loadViewChunk();
-}
-
-template <class C, int N>
-worldVector<C, N>::worldVector()
-{
-    this->wv = new C[N];
-    this->len = N;
-}
-template <class C, int N>
-C &worldVector<C, N>::operator[](size_t index)
-{
-    if (index > this->len)
-    {
-        C *temp = this->wv;
-        this->wv = new C[index + 2];
-        for (int i = 0; i < this->len; i++)
-        {
-            this->wv[i] = temp[i];
-        }
-        delete[] temp;
-        this->len = index + 2;
-    }
-    return this->wv[index];
 }

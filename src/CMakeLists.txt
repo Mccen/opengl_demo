@@ -1,4 +1,4 @@
-file(GLOB src *.cpp)
+file(GLOB src *.cpp utils/*.cpp modules/*.cpp)
 include_directories(${PROJECT_SOURCE_DIR}/thirdparty/glfw/include)
 include_directories(${PROJECT_SOURCE_DIR}/thirdparty/glad/include)
 include_directories(${PROJECT_SOURCE_DIR}/thirdparty/glm)

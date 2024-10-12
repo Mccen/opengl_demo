@@ -1,20 +1,21 @@
 #ifndef NOISE_HPP
 #define NOISE_HPP
-#include "headerLists.hpp"
-#include <cmath>
+#include "../headerLists.hpp"
 
 struct Noise // 柏林噪声
 {
     // 当前区块的位置
     glm::vec2 chunkPosition;
+
     // 当前区块分配到的梯度向量
     glm::vec2 gradientVec[4];
-    //结果
+
+    // 结果
     GLfloat finNum[16][16];
     // 传入方块位置，区块位置
-    Noise(){}
     Noise(const glm::vec2 chunkPosition);
-    ~Noise();
+    Noise() = default;
+    ~Noise() = default;
     // 生成随机梯度向量
     void GradientVec();
     // 计算方向向量
