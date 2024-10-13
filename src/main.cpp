@@ -19,7 +19,7 @@ static Material material[MATERIALS];
 static GLuint tex[TEXTURES];
 
 // 单例
-struct World &mworld = World::getWorld();
+//struct World &mworld = World::getWorld();
 struct Controler &mcontroler = Controler::getControler();
 struct Window &mwindow = Window::getWindow();
 struct Camera &mcamera = Camera::getCamera();
@@ -48,7 +48,7 @@ void fps(GLFWwindow *window)
   if (elapsedTime >= 1.0f)
   {
     std::stringstream ss;
-    ss << "FPS: " << frames;
+    ss << "FPS: " << frames <<"   "<< "pos:" << mcamera.e_position.x << "," <<mcamera.e_position.y << "," << mcamera.e_position.z;
     glfwSetWindowTitle(window, ss.str().c_str());
     frames = 0;
     elapsedTime = 0.0f;
@@ -56,12 +56,11 @@ void fps(GLFWwindow *window)
 }
 void display()
 {
-  float currentTime = glfwGetTime();
   glClearColor(0.3, 0.5, 0.4, 1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glm::mat4 lmodel(1.0f);
-  lmodel = glm::scale(lmodel, glm::vec3(0.2f, 0.2f, 0.2f));
+  lmodel = glm::scale(lmodel, glm::vec3(0.5f, 0.5f, 0.5f));
   glUseProgram(program[lightProgram]);
   glBindVertexArray(obj[Cube].VAO);
   glUniformMatrix4fv(glGetUniformLocation(program[lightProgram], "lmodel"), 1,
@@ -95,20 +94,7 @@ int main()
 {
   mwindow.createWindow(800, 600, "OpenGL", 3, 3);
   GLFWwindow *window = mwindow.window;
-  if (window == NULL)
-  {
-    printf("Failed to create GLFW window\n");
-    glfwTerminate();
-    return -1;
-  }
-  int version = gladLoadGL(glfwGetProcAddress);
-  if (version == 0)
-  {
-    printf("Failed to initialize OpenGL context\n");
-    return -1;
-  }
-  printf("Loaded OpenGL %d.%d\n", GLAD_VERSION_MAJOR(version),
-         GLAD_VERSION_MINOR(version));
+
   init(window);
   mcamera.createCamera(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
                        glm::vec3(0.0f, 1.0f, 0.0f));
@@ -116,6 +102,7 @@ int main()
   {
     mcontroler.updateTime();
     mcontroler.getKeyEventLongTime(window);
+    fps(window);
     display();
     glfwSwapBuffers(window);
     glfwPollEvents();
