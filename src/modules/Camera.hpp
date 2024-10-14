@@ -9,13 +9,20 @@ struct Plane{
   glm::vec3 normal;
   float distance;
 };
+  /**
+   * 需要特殊说明的是,由于传统opengl的右手坐标系不便于理解(是的,是我不理解)
+   * 本相机系统建立的坐标系原点为面对屏幕的人,正面为z正,右面为x正,上面为y正
+   * 相机默认视线与人同步,即朝向(0,0,1)
+   * c_yaw的默认角度为相对z正的偏移角,左偏为负右偏为正
+   * c_pitch的默认角度为相对z正的偏移角,上偏为正下偏为负
+   */
 struct Camera : Entity, Single
 {
 
   //相机的前,右,上向量
   glm::vec3 CF,CR,CU;
   // 相机的偏航角和俯仰角
-  GLfloat c_yaw = -90.0f, c_pitch = 0.0f;
+  GLfloat c_yaw = 0.0f, c_pitch = 0.0f;
   // 相机的视野范围
   GLfloat fov = 45.0f;
   // 临时储存窗口的位置及宽高

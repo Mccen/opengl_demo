@@ -4,7 +4,7 @@ void Camera::createCamera(glm::vec3 pos, glm::vec3 target, glm::vec3 worldUp)
   this->e_position = pos;
   this->e_target = target;
   this->e_up = worldUp;
-  //建立坐标系,以相机为基准
+
   //由pos指向target
   CF = glm::normalize(glm::vec3(target - pos));
   //右向量
@@ -18,7 +18,7 @@ glm::mat4 Camera::modelMatrix(){
 }
 glm::mat4 Camera::viewMatrix()
 {
-  view = glm::lookAt(e_position, e_position + CF, CU);
+  view = glm::lookAt(e_position, e_position + CF , CU);
   view = glm::scale(view, glm::vec3(0.5f, 0.5f, 0.5f));
   return view;
 }

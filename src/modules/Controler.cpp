@@ -38,9 +38,9 @@ void Controler::updateCamera(float yaw, float pitch)
     Camera::getCamera().c_pitch = -89.0f;
   }
   Camera::getCamera().CF = glm::normalize(glm::vec3(
-      cos(glm::radians(Camera::getCamera().c_yaw)) * cos(glm::radians(Camera::getCamera().c_pitch)),
+      -sin(glm::radians(Camera::getCamera().c_yaw)) * cos(glm::radians(Camera::getCamera().c_pitch)),
       sin(glm::radians(Camera::getCamera().c_pitch)),
-      sin(glm::radians(Camera::getCamera().c_yaw)) * cos(glm::radians(Camera::getCamera().c_pitch))));
+      cos(glm::radians(Camera::getCamera().c_yaw)) * cos(glm::radians(Camera::getCamera().c_pitch))));
   Camera::getCamera().CR = glm::normalize(glm::cross(Camera::getCamera().e_up, Camera::getCamera().CF));
   Camera::getCamera().CU = glm::cross(Camera::getCamera().CF, Camera::getCamera().CR);
 }
