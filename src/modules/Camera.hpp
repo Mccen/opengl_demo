@@ -20,18 +20,20 @@ struct Camera : Entity, Single
   GLfloat fov = 45.0f;
   // 临时储存窗口的位置及宽高
   int windowPosX, windowPosY, windowWidth, windowHeight;
-  // 相机的视图矩阵,投影矩阵
-  glm::mat4  view = glm::mat4(1.0f), projection = glm::mat4(1.0f);
-  // 相机的VP矩阵
-  glm::mat4 VP=glm::mat4(1.0f);
+  // 相机的模型矩阵,视图矩阵,投影矩阵
+  glm::mat4 model = glm::mat4(1.0f), view = glm::mat4(1.0f), projection = glm::mat4(1.0f);
+  // 相机的MVP矩阵
+  glm::mat4 MVP;
   // 视锥体
   Plane planes[6];
 
 
   void createCamera(glm::vec3 pos, glm::vec3 target, glm::vec3 worldUp);
+  glm::mat4 modelMatrix();
   glm::mat4 viewMatrix();
   glm::mat4 perMatrix();
-  void getVP();
+
+  void getMVP();
   static Camera &getCamera()
   {
     static Camera camera;

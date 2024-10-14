@@ -96,7 +96,7 @@ int main()
   GLFWwindow *window = mwindow.window;
 
   init(window);
-  mcamera.createCamera(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+  mcamera.createCamera(glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f),
                        glm::vec3(0.0f, 1.0f, 0.0f));
   while (!glfwWindowShouldClose(window))
   {

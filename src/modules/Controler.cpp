@@ -41,8 +41,8 @@ void Controler::updateCamera(float yaw, float pitch)
       cos(glm::radians(Camera::getCamera().c_yaw)) * cos(glm::radians(Camera::getCamera().c_pitch)),
       sin(glm::radians(Camera::getCamera().c_pitch)),
       sin(glm::radians(Camera::getCamera().c_yaw)) * cos(glm::radians(Camera::getCamera().c_pitch))));
-  Camera::getCamera().CR = glm::normalize(glm::cross(Camera::getCamera().CF, Camera::getCamera().e_up));
-  Camera::getCamera().CU = glm::cross(Camera::getCamera().CR, Camera::getCamera().CF);
+  Camera::getCamera().CR = glm::normalize(glm::cross(Camera::getCamera().e_up, Camera::getCamera().CF));
+  Camera::getCamera().CU = glm::cross(Camera::getCamera().CF, Camera::getCamera().CR);
 }
 void Controler::getKeyEvent(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
@@ -121,11 +121,11 @@ void Controler::getKeyEventLongTime(GLFWwindow *window)
   }
   if (aPressed)
   {
-    camera.e_position -= speed * camera.CR;
+    camera.e_position += speed * camera.CR;
   }
   if (dPressed)
   {
-    camera.e_position += speed * camera.CR;
+    camera.e_position -= speed * camera.CR;
   }
   if (cPressed || spacePressed) // 合并上下移动的条件判断
   {
@@ -136,7 +136,7 @@ void Controler::getKeyEventLongTime(GLFWwindow *window)
 }
 void Controler::updateCameraMatrix()
 {
-  Camera::getCamera().getVP();
+  Camera::getCamera().getMVP();
 }
 void Controler::updateTime()
 {
